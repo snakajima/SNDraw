@@ -9,7 +9,7 @@
 import UIKit
 
 class SNDrawView: UIView {
-    var delta = 20.0 as CGFloat
+    var delta = 10.0 as CGFloat
     var path = CGPathCreateMutable()
     var ptLast = CGPointZero
     var ptDelta:CGPoint?
@@ -48,6 +48,14 @@ class SNDrawView: UIView {
                 }
                 ptLast = pt
                 ptDelta = CGPointMake(dx, dy)
+            } else if let ptD = ptDelta {
+                let v = ptD.x * dx + ptD.y * dy
+                if v < 0 {
+                    CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
+                    shapeLayer.path = path
+                    ptLast = pt
+                    ptDelta = CGPointMake(dx, dy)
+                }
             }
         }
     }
