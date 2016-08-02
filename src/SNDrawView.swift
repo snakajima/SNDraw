@@ -18,8 +18,8 @@ class SNDrawView: UIView {
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
         shapeLayer.lineWidth = 10.0
         shapeLayer.strokeColor = UIColor.blueColor().CGColor
-        shapeLayer.lineCap = "round"
-        shapeLayer.lineJoin = "round"
+        shapeLayer.lineCap = kCALineCapRound
+        shapeLayer.lineJoin = kCALineJoinRound
         shapeLayer.fillColor = UIColor.clearColor().CGColor
         self.layer.addSublayer(shapeLayer)
         return shapeLayer
@@ -49,8 +49,7 @@ class SNDrawView: UIView {
                 ptLast = pt
                 ptDelta = CGPointMake(dx, dy)
             } else if let ptD = ptDelta {
-                let v = ptD.x * dx + ptD.y * dy
-                if v < 0 {
+                if ptD.x * dx + ptD.y * dy < 0 {
                     CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
                     shapeLayer.path = path
                     ptLast = pt
