@@ -12,7 +12,7 @@ class SNDrawView: UIView {
     var delta = 20.0 as CGFloat
     var path = CGPathCreateMutable()
     var ptLast = CGPointZero
-    var count = 0
+    var ptDelta:CGPoint?
     lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
@@ -32,7 +32,7 @@ class SNDrawView: UIView {
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
             shapeLayer.path = path
             ptLast = pt
-            count = 0
+            ptDelta = nil
         }
     }
     
@@ -40,13 +40,15 @@ class SNDrawView: UIView {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
             let (dx, dy) = (pt.x - ptLast.x, pt.y - ptLast.y)
-            if count > 0 && dx * dx + dy * dy > delta * delta {
-                let ptMid = CGPointMake((ptLast.x + pt.x) / 2.0, (ptLast.y + pt.y) / 2.0)
-                CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, ptMid.x, ptMid.y)
-                shapeLayer.path = path
+            if dx * dx + dy * dy > delta * delta {
+                if let _ = ptDelta {
+                    let ptMid = CGPointMake((ptLast.x + pt.x) / 2.0, (ptLast.y + pt.y) / 2.0)
+                    CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, ptMid.x, ptMid.y)
+                    shapeLayer.path = path
+                }
                 ptLast = pt
+                ptDelta = CGPointMake(dx, dy)
             }
-            count = count + 1
         }
     }
     
