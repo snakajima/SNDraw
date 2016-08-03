@@ -11,7 +11,6 @@ import UIKit
 class SNDrawView: UIView {
     var delta = 10.0 as CGFloat
     var path = CGPathCreateMutable()
-    var pathPrev:CGMutablePath?
     var ptPrev = CGPointZero
     var anchor = CGPointZero
     var last = CGPointZero
@@ -38,7 +37,6 @@ class SNDrawView: UIView {
             anchor = pt // REVIEW: optional?
             last = pt
             ptDelta = nil
-            pathPrev = nil
             count = 0
         }
     }
@@ -50,7 +48,6 @@ class SNDrawView: UIView {
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
             if dxA * dxA + dyA * dyA > delta * delta {
                 if let _ = ptDelta {
-                    pathPrev = CGPathCreateMutableCopy(path)
                     ptPrev = anchor
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
@@ -59,16 +56,8 @@ class SNDrawView: UIView {
                 anchor = pt
                 ptDelta = CGPointMake(dx, dy)
             } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
-                if let _ = pathPrev {
-                    print("Tight turn", count)
-                    //CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, anchor.x, anchor.y)
-                    //path = pathPrev
-                    CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
-                } else {
-                    print("Tight turn, no pathPrev", count)
-                    CGPathAddLineToPoint(path, nil, anchor.x, anchor.y)
-                }
-                pathPrev = nil
+                print("Tight turn", count)
+                CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
                 shapeLayer.path = path
                 anchor = pt
                 ptDelta = CGPointMake(dx, dy)
@@ -87,7 +76,6 @@ class SNDrawView: UIView {
             let pt = touch.locationInView(self)
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, pt.x, pt.y)
             shapeLayer.path = path
-            pathPrev = nil
         }
     }
     
