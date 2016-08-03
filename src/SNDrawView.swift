@@ -9,10 +9,13 @@
 import UIKit
 
 class SNDrawView: UIView {
-    var delta = 10.0 as CGFloat
+    var delta = 20.0 as CGFloat
     var path = CGPathCreateMutable()
+    var pathPrev:CGMutablePath?
+    var ptPrev = CGPointZero
     var ptLast = CGPointZero
     var ptDelta:CGPoint?
+    var count = 0
     lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
@@ -33,6 +36,8 @@ class SNDrawView: UIView {
             shapeLayer.path = path
             ptLast = pt
             ptDelta = nil
+            pathPrev = nil
+            count = 0
         }
     }
     
@@ -42,6 +47,8 @@ class SNDrawView: UIView {
             let (dx, dy) = (pt.x - ptLast.x, pt.y - ptLast.y)
             if dx * dx + dy * dy > delta * delta {
                 if let _ = ptDelta {
+                    pathPrev = CGPathCreateMutableCopy(path)
+                    ptPrev = ptLast
                     let ptMid = CGPointMake((ptLast.x + pt.x) / 2.0, (ptLast.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, ptMid.x, ptMid.y)
                     shapeLayer.path = path
@@ -50,12 +57,21 @@ class SNDrawView: UIView {
                 ptDelta = CGPointMake(dx, dy)
             } else if let ptD = ptDelta {
                 if ptD.x * dx + ptD.y * dy < 0 {
-                    CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
+                    if let pathPrev = pathPrev {
+                        print("Tight turn", count)
+                        CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, ptLast.x, ptLast.y)
+                        path = pathPrev
+                    } else {
+                        print("Tight turn, no pathPrev", count)
+                        CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
+                    }
+                    pathPrev = nil
                     shapeLayer.path = path
                     ptLast = pt
                     ptDelta = CGPointMake(dx, dy)
                 }
             }
+            count = count + 1
         }
     }
     
@@ -64,6 +80,7 @@ class SNDrawView: UIView {
             let pt = touch.locationInView(self)
             CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, pt.x, pt.y)
             shapeLayer.path = path
+            pathPrev = nil
         }
     }
     
