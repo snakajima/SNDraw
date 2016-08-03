@@ -13,7 +13,7 @@ class SNDrawView: UIView {
     var path = CGPathCreateMutable()
     var pathPrev:CGMutablePath?
     var ptPrev = CGPointZero
-    var ptLast = CGPointZero
+    var anchor = CGPointZero
     var ptDelta:CGPoint?
     var count = 0
     lazy var shapeLayer:CAShapeLayer = {
@@ -34,7 +34,7 @@ class SNDrawView: UIView {
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
             shapeLayer.path = path
-            ptLast = pt
+            anchor = pt
             ptDelta = nil
             pathPrev = nil
             count = 0
@@ -44,29 +44,29 @@ class SNDrawView: UIView {
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
-            let (dx, dy) = (pt.x - ptLast.x, pt.y - ptLast.y)
+            let (dx, dy) = (pt.x - anchor.x, pt.y - anchor.y)
             if dx * dx + dy * dy > delta * delta {
                 if let _ = ptDelta {
                     pathPrev = CGPathCreateMutableCopy(path)
-                    ptPrev = ptLast
-                    let ptMid = CGPointMake((ptLast.x + pt.x) / 2.0, (ptLast.y + pt.y) / 2.0)
-                    CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, ptMid.x, ptMid.y)
+                    ptPrev = anchor
+                    let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
+                    CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
                     shapeLayer.path = path
                 }
-                ptLast = pt
+                anchor = pt
                 ptDelta = CGPointMake(dx, dy)
             } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
                 if let pathPrev = pathPrev {
                     print("Tight turn", count)
-                    CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, ptLast.x, ptLast.y)
+                    CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, anchor.x, anchor.y)
                     path = pathPrev
                 } else {
                     print("Tight turn, no pathPrev", count)
-                    CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
+                    CGPathAddLineToPoint(path, nil, anchor.x, anchor.y)
                 }
                 pathPrev = nil
                 shapeLayer.path = path
-                ptLast = pt
+                anchor = pt
                 ptDelta = CGPointMake(dx, dy)
             } else {
                 let pathTemp = CGPathCreateMutableCopy(path)
@@ -80,7 +80,7 @@ class SNDrawView: UIView {
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
-            CGPathAddQuadCurveToPoint(path, nil, ptLast.x, ptLast.y, pt.x, pt.y)
+            CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, pt.x, pt.y)
             shapeLayer.path = path
             pathPrev = nil
         }
