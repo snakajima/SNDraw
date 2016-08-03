@@ -9,11 +9,12 @@
 import UIKit
 
 class SNDrawView: UIView {
-    var delta = 20.0 as CGFloat
+    var delta = 10.0 as CGFloat
     var path = CGPathCreateMutable()
     var pathPrev:CGMutablePath?
     var ptPrev = CGPointZero
     var anchor = CGPointZero
+    var last = CGPointZero
     var ptDelta:CGPoint?
     var count = 0
     lazy var shapeLayer:CAShapeLayer = {
@@ -34,7 +35,8 @@ class SNDrawView: UIView {
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
             shapeLayer.path = path
-            anchor = pt
+            anchor = pt // REVIEW: optional?
+            last = pt
             ptDelta = nil
             pathPrev = nil
             count = 0
@@ -44,8 +46,9 @@ class SNDrawView: UIView {
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
-            let (dx, dy) = (pt.x - anchor.x, pt.y - anchor.y)
-            if dx * dx + dy * dy > delta * delta {
+            let (dxA, dyA) = (pt.x - anchor.x, pt.y - anchor.y)
+            let (dx, dy) = (pt.x - last.x, pt.y - last.y)
+            if dxA * dxA + dyA * dyA > delta * delta {
                 if let _ = ptDelta {
                     pathPrev = CGPathCreateMutableCopy(path)
                     ptPrev = anchor
@@ -56,10 +59,11 @@ class SNDrawView: UIView {
                 anchor = pt
                 ptDelta = CGPointMake(dx, dy)
             } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
-                if let pathPrev = pathPrev {
+                if let _ = pathPrev {
                     print("Tight turn", count)
-                    CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, anchor.x, anchor.y)
-                    path = pathPrev
+                    //CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, anchor.x, anchor.y)
+                    //path = pathPrev
+                    CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
                 } else {
                     print("Tight turn, no pathPrev", count)
                     CGPathAddLineToPoint(path, nil, anchor.x, anchor.y)
@@ -73,6 +77,7 @@ class SNDrawView: UIView {
                 CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
                 shapeLayer.path = pathTemp
             }
+            last = pt
             count = count + 1
         }
     }
