@@ -55,21 +55,23 @@ class SNDrawView: UIView {
                 }
                 ptLast = pt
                 ptDelta = CGPointMake(dx, dy)
-            } else if let ptD = ptDelta {
-                if ptD.x * dx + ptD.y * dy < 0 {
-                    if let pathPrev = pathPrev {
-                        print("Tight turn", count)
-                        CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, ptLast.x, ptLast.y)
-                        path = pathPrev
-                    } else {
-                        print("Tight turn, no pathPrev", count)
-                        CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
-                    }
-                    pathPrev = nil
-                    shapeLayer.path = path
-                    ptLast = pt
-                    ptDelta = CGPointMake(dx, dy)
+            } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
+                if let pathPrev = pathPrev {
+                    print("Tight turn", count)
+                    CGPathAddQuadCurveToPoint(pathPrev, nil, ptPrev.x, ptPrev.y, ptLast.x, ptLast.y)
+                    path = pathPrev
+                } else {
+                    print("Tight turn, no pathPrev", count)
+                    CGPathAddLineToPoint(path, nil, ptLast.x, ptLast.y)
                 }
+                pathPrev = nil
+                shapeLayer.path = path
+                ptLast = pt
+                ptDelta = CGPointMake(dx, dy)
+            } else {
+                let pathTemp = CGPathCreateMutableCopy(path)
+                CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
+                shapeLayer.path = pathTemp
             }
             count = count + 1
         }
