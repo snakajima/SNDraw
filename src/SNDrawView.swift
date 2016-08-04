@@ -10,14 +10,14 @@ import UIKit
 
 class SNDrawView: UIView {
     var minSegment = 25.0 as CGFloat
-    var segment = 0 as CGFloat
-    var path = CGPathCreateMutable()
-    var anchor = CGPointZero // last anchor point
-    var last = CGPointZero // last touch point
-    var ptDelta:CGPoint?
-    var fEdge = true //either the begging or the turning point
-    var count = 0
-    lazy var shapeLayer:CAShapeLayer = {
+    private var path = CGPathCreateMutable()
+    private var segment = 0 as CGFloat
+    private var anchor = CGPointZero // last anchor point
+    private var last = CGPointZero // last touch point
+    private var delta:CGPoint? // last movement to compare against to detect a sharp turn
+    private var fEdge = true //either the begging or the turning point
+    private var count = 0
+    private lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
         shapeLayer.lineWidth = 10.0
@@ -37,7 +37,7 @@ class SNDrawView: UIView {
             shapeLayer.path = path
             anchor = pt
             last = pt
-            ptDelta = nil
+            delta = nil
             fEdge = true
             segment = 0.0
             count = 0
@@ -55,17 +55,17 @@ class SNDrawView: UIView {
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
                     shapeLayer.path = path
                 }
+                delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
                 anchor = pt
-                ptDelta = CGPointMake(dx, dy)
                 fEdge = false
                 segment = 0.0
                 count = count + 1
-            } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
+            } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
                 print("Tight turn", count)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
                 shapeLayer.path = path
                 anchor = pt
-                ptDelta = nil
+                delta = nil
                 fEdge = true
                 segment = 0.0
                 count = count + 1
@@ -73,7 +73,7 @@ class SNDrawView: UIView {
                 let pathTemp = CGPathCreateMutableCopy(path)
                 CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
                 shapeLayer.path = pathTemp
-                ptDelta = CGPointMake(dx, dy)
+                delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
             }
             last = pt
         }
