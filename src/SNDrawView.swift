@@ -9,12 +9,12 @@
 import UIKit
 
 class SNDrawView: UIView {
-    var delta = 10.0 as CGFloat
+    var delta = 25.0 as CGFloat
     var path = CGPathCreateMutable()
-    var ptPrev = CGPointZero
-    var anchor = CGPointZero
-    var last = CGPointZero
+    var anchor = CGPointZero // last anchor point
+    var last = CGPointZero // last touch point
     var ptDelta:CGPoint?
+    var fEdge = true //either the begging or the turning point
     var count = 0
     lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
@@ -34,9 +34,10 @@ class SNDrawView: UIView {
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
             shapeLayer.path = path
-            anchor = pt // REVIEW: optional?
+            anchor = pt
             last = pt
             ptDelta = nil
+            fEdge = true
             count = 0
         }
     }
@@ -47,32 +48,35 @@ class SNDrawView: UIView {
             let (dxA, dyA) = (pt.x - anchor.x, pt.y - anchor.y)
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
             if dxA * dxA + dyA * dyA > delta * delta {
-                if let _ = ptDelta {
-                    ptPrev = anchor
+                if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
                     shapeLayer.path = path
                 }
                 anchor = pt
                 ptDelta = CGPointMake(dx, dy)
+                fEdge = false
+                count = count + 1
             } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
                 print("Tight turn", count)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
                 shapeLayer.path = path
                 anchor = pt
-                ptDelta = CGPointMake(dx, dy)
+                ptDelta = nil
+                fEdge = true
+                count = count + 1
             } else {
                 let pathTemp = CGPathCreateMutableCopy(path)
                 CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
                 shapeLayer.path = pathTemp
             }
             last = pt
-            count = count + 1
         }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
+            print("End", count)
             let pt = touch.locationInView(self)
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, pt.x, pt.y)
             shapeLayer.path = path
