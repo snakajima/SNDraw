@@ -75,10 +75,10 @@ class SNDrawView: UIView {
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if let touch = touches.first {
+        if let _ = touches.first {
             print("End", count)
-            let pt = touch.locationInView(self)
-            CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, pt.x, pt.y)
+            // NOTE: We intentionally ignore the last point to reduce the noise.
+            CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             shapeLayer.path = path
         }
     }
