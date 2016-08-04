@@ -10,6 +10,7 @@ import UIKit
 
 class SNDrawView: UIView {
     var minSegment = 25.0 as CGFloat
+    var segment = 0 as CGFloat
     var path = CGPathCreateMutable()
     var anchor = CGPointZero // last anchor point
     var last = CGPointZero // last touch point
@@ -38,6 +39,7 @@ class SNDrawView: UIView {
             last = pt
             ptDelta = nil
             fEdge = true
+            segment = 0.0
             count = 0
         }
     }
@@ -45,9 +47,9 @@ class SNDrawView: UIView {
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
-            let (dxA, dyA) = (pt.x - anchor.x, pt.y - anchor.y)
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
-            if dxA * dxA + dyA * dyA > minSegment * minSegment {
+            segment += sqrt(dx * dx + dy * dy)
+            if segment > minSegment {
                 if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
@@ -56,6 +58,7 @@ class SNDrawView: UIView {
                 anchor = pt
                 ptDelta = CGPointMake(dx, dy)
                 fEdge = false
+                segment = 0.0
                 count = count + 1
             } else if let ptD = ptDelta where ptD.x * dx + ptD.y * dy < 0 {
                 print("Tight turn", count)
@@ -64,11 +67,13 @@ class SNDrawView: UIView {
                 anchor = pt
                 ptDelta = nil
                 fEdge = true
+                segment = 0.0
                 count = count + 1
             } else {
                 let pathTemp = CGPathCreateMutableCopy(path)
                 CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
                 shapeLayer.path = pathTemp
+                ptDelta = CGPointMake(dx, dy)
             }
             last = pt
         }
