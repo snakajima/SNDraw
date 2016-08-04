@@ -9,7 +9,7 @@
 import UIKit
 
 class SNDrawView: UIView {
-    var delta = 25.0 as CGFloat
+    var minSegment = 25.0 as CGFloat
     var path = CGPathCreateMutable()
     var anchor = CGPointZero // last anchor point
     var last = CGPointZero // last touch point
@@ -47,7 +47,7 @@ class SNDrawView: UIView {
             let pt = touch.locationInView(self)
             let (dxA, dyA) = (pt.x - anchor.x, pt.y - anchor.y)
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
-            if dxA * dxA + dyA * dyA > delta * delta {
+            if dxA * dxA + dyA * dyA > minSegment * minSegment {
                 if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
