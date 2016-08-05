@@ -37,16 +37,18 @@ class ViewController: UIViewController {
 }
 
 extension ViewController : SNDrawViewDelegate {
-    func didComplete(ptBegin:CGPoint, curves:[SNQuadCurve]) -> Bool {
-        print("complete", curves.count)
+    func didComplete(ptBegin:CGPoint, elements:[SNPathElement]) -> Bool {
+        print("complete", elements.count)
         let pathLine = CGPathCreateMutable()
         let pathCurve = CGPathCreateMutable()
         CGPathMoveToPoint(pathLine, nil, ptBegin.x, ptBegin.y)
         CGPathMoveToPoint(pathCurve, nil, ptBegin.x, ptBegin.y)
-        for curve in curves {
-            CGPathAddLineToPoint(pathLine, nil, curve.cpt.x, curve.cpt.y)
-            CGPathAddLineToPoint(pathLine, nil, curve.pt.x, curve.pt.y)
-            CGPathAddQuadCurveToPoint(pathCurve, nil, curve.cpt.x, curve.cpt.y, curve.pt.x, curve.pt.y)
+        for element in elements {
+            if let curve = element as? SNQuadCurve {
+                CGPathAddLineToPoint(pathLine, nil, curve.cpt.x, curve.cpt.y)
+                CGPathAddLineToPoint(pathLine, nil, curve.pt.x, curve.pt.y)
+                CGPathAddQuadCurveToPoint(pathCurve, nil, curve.cpt.x, curve.cpt.y, curve.pt.x, curve.pt.y)
+            }
         }
         let layerCurve = CAShapeLayer()
         layerCurve.path = pathCurve
@@ -60,7 +62,7 @@ extension ViewController : SNDrawViewDelegate {
         layerLine.path = pathLine
         layerLine.lineWidth = 1
         layerLine.fillColor = UIColor.clearColor().CGColor
-        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
+        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.2).CGColor
         self.view.layer.addSublayer(layerLine)
         layers.append(layerLine)
 

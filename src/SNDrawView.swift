@@ -8,24 +8,16 @@
 
 import UIKit
 
-public struct SNQuadCurve {
-    let cpt:CGPoint
-    let pt:CGPoint
-    init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
-        cpt = CGPointMake(cpx, cpy)
-        pt = CGPointMake(x, y)
-    }
-}
 
 public protocol SNDrawViewDelegate:NSObjectProtocol {
-    func didComplete(ptBegin:CGPoint, curves:[SNQuadCurve]) -> Bool
+    func didComplete(ptBegin:CGPoint, elements:[SNPathElement]) -> Bool
 }
 
 public class SNDrawView: UIView {
     public var minSegment = 25.0 as CGFloat
     weak public var delegate:SNDrawViewDelegate?
     private var ptBegin = CGPointZero
-    private var curves = [SNQuadCurve]()
+    private var elements = [SNPathElement]()
     private var path = CGPathCreateMutable()
     private var segment = 0 as CGFloat
     private var anchor = CGPointZero // last anchor point
@@ -51,7 +43,7 @@ public class SNDrawView: UIView {
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
             ptBegin = pt
-            curves = [SNQuadCurve]()
+            elements = [SNPathElement]()
             shapeLayer.path = path
             anchor = pt
             last = pt
@@ -71,7 +63,7 @@ public class SNDrawView: UIView {
                 if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
-                    curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
+                    elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
                     shapeLayer.path = path
                 }
                 delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
@@ -82,7 +74,7 @@ public class SNDrawView: UIView {
             } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
                 print("Tight turn", count)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
-                curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
+                elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
                 shapeLayer.path = path
                 anchor = pt
                 delta = nil
@@ -104,10 +96,10 @@ public class SNDrawView: UIView {
             print("End", count)
             // NOTE: We intentionally ignore the last point to reduce the noise.
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
-            curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
+            elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             shapeLayer.path = path
             
-            if let delegate = delegate where delegate.didComplete(ptBegin, curves: curves) {
+            if let delegate = delegate where delegate.didComplete(ptBegin, elements: elements) {
                 shapeLayer.path = nil
             }
         }
