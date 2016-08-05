@@ -13,6 +13,9 @@ public protocol SNPathElement {
 
 public struct SNMove:SNPathElement {
     let pt:CGPoint
+    init(x:CGFloat, y:CGFloat) {
+        pt = CGPointMake(x,y)
+    }
 }
 
 public struct SNLine:SNPathElement {
@@ -25,5 +28,12 @@ public struct SNQuadCurve:SNPathElement {
     init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
         cpt = CGPointMake(cpx, cpy)
         pt = CGPointMake(x, y)
+    }
+}
+
+extension ArrayLiteralConvertible where Element == SNPathElement {
+    func __conversion() -> CGPath {
+        let path = CGPathCreateMutable()
+        return path
     }
 }

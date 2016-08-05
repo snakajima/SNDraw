@@ -10,13 +10,12 @@ import UIKit
 
 
 public protocol SNDrawViewDelegate:NSObjectProtocol {
-    func didComplete(ptBegin:CGPoint, elements:[SNPathElement]) -> Bool
+    func didComplete(elements:[SNPathElement]) -> Bool
 }
 
 public class SNDrawView: UIView {
     public var minSegment = 25.0 as CGFloat
     weak public var delegate:SNDrawViewDelegate?
-    private var ptBegin = CGPointZero
     private var elements = [SNPathElement]()
     private var path = CGPathCreateMutable()
     private var segment = 0 as CGFloat
@@ -42,8 +41,7 @@ public class SNDrawView: UIView {
             let pt = touch.locationInView(self)
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
-            ptBegin = pt
-            elements = [SNPathElement]()
+            elements = [SNMove(x: pt.x, y: pt.y)]
             shapeLayer.path = path
             anchor = pt
             last = pt
@@ -99,7 +97,7 @@ public class SNDrawView: UIView {
             elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             shapeLayer.path = path
             
-            if let delegate = delegate where delegate.didComplete(ptBegin, elements: elements) {
+            if let delegate = delegate where delegate.didComplete(elements) {
                 shapeLayer.path = nil
             }
         }
