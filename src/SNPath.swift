@@ -10,30 +10,26 @@ import UIKit
 
 public struct SNPath {
     static func pathFrom(elements:[SNPathElement]) -> CGPath {
-        let path = CGPathCreateMutable()
-        for element in elements {
-            element.addToPath(path)
+        return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
+            return element.addToPath(path)
         }
-        return path
     }
     
     static func polyPathFrom(elements:[SNPathElement]) -> CGPath {
-        let path = CGPathCreateMutable()
-        for element in elements {
-            element.addToPathAsPolygon(path)
+        return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
+            return element.addToPathAsPolygon(path)
         }
-        return path
     }
 }
 
 public protocol SNPathElement {
-    func addToPath(path:CGMutablePath)
-    func addToPathAsPolygon(path:CGMutablePath)
+    func addToPath(path:CGMutablePath) -> CGMutablePath
+    func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
 }
 
 extension SNPathElement {
-    public func addToPathAsPolygon(path:CGMutablePath) {
-        addToPath(path)
+    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
+        return addToPath(path)
     }
 }
 
@@ -43,16 +39,18 @@ public struct SNMove:SNPathElement {
         pt = CGPointMake(x,y)
     }
     
-    public func addToPath(path:CGMutablePath) {
+    public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathMoveToPoint(path, nil, pt.x, pt.y)
+        return path
     }
 }
 
 public struct SNLine:SNPathElement {
     let pt:CGPoint
 
-    public func addToPath(path:CGMutablePath) {
+    public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+        return path
     }
 }
 
@@ -64,13 +62,15 @@ public struct SNQuadCurve:SNPathElement {
         pt = CGPointMake(x, y)
     }
 
-    public func addToPath(path:CGMutablePath) {
+    public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathAddQuadCurveToPoint(path, nil, cp.x, cp.y, pt.x, pt.y)
+        return path
     }
 
-    public func addToPathAsPolygon(path:CGMutablePath) {
+    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
         CGPathAddLineToPoint(path, nil, cp.x, cp.y)
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+        return path
     }
 }
 
@@ -84,14 +84,16 @@ public struct SNBezierCurve:SNPathElement {
         pt = CGPointMake(x, y)
     }
 
-    public func addToPath(path:CGMutablePath) {
+    public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathAddCurveToPoint(path, nil, cp1.x, cp1.y, cp2.x, cp2.y, pt.x, pt.y)
+        return path
     }
 
-    public func addToPathAsPolygon(path:CGMutablePath) {
+    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
         CGPathAddLineToPoint(path, nil, cp1.x, cp1.y)
         CGPathAddLineToPoint(path, nil, cp2.x, cp2.y)
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+        return path
     }
 }
 
