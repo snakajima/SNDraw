@@ -8,8 +8,24 @@
 
 import UIKit
 
-class SNDrawView: UIView {
-    var minSegment = 25.0 as CGFloat
+public struct SNQuadCurve {
+    let cpt:CGPoint
+    let pt:CGPoint
+    init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
+        cpt = CGPointMake(cpx, cpy)
+        pt = CGPointMake(x, y)
+    }
+}
+
+public protocol SNDrawViewDelegate:NSObjectProtocol {
+    func didComplete(ptBegin:CGPoint, curves:[SNQuadCurve]) -> Bool
+}
+
+public class SNDrawView: UIView {
+    public var minSegment = 25.0 as CGFloat
+    weak public var delegate:SNDrawViewDelegate?
+    private var ptBegin = CGPointZero
+    private var curves = [SNQuadCurve]()
     private var path = CGPathCreateMutable()
     private var segment = 0 as CGFloat
     private var anchor = CGPointZero // last anchor point
@@ -29,11 +45,13 @@ class SNDrawView: UIView {
         return shapeLayer
     }()
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
             path = CGPathCreateMutable()
             CGPathMoveToPoint(path, nil, pt.x, pt.y)
+            ptBegin = pt
+            curves = [SNQuadCurve]()
             shapeLayer.path = path
             anchor = pt
             last = pt
@@ -44,7 +62,7 @@ class SNDrawView: UIView {
         }
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self)
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
@@ -53,6 +71,7 @@ class SNDrawView: UIView {
                 if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
+                    curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
                     shapeLayer.path = path
                 }
                 delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
@@ -63,6 +82,7 @@ class SNDrawView: UIView {
             } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
                 print("Tight turn", count)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
+                curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
                 shapeLayer.path = path
                 anchor = pt
                 delta = nil
@@ -79,16 +99,18 @@ class SNDrawView: UIView {
         }
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let _ = touches.first {
             print("End", count)
             // NOTE: We intentionally ignore the last point to reduce the noise.
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             shapeLayer.path = path
+            
+            delegate?.didComplete(ptBegin, curves: curves)
         }
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    override public func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
         print("touchesCancelled")
     }
 }
