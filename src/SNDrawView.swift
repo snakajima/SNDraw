@@ -107,7 +107,9 @@ public class SNDrawView: UIView {
             curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             shapeLayer.path = path
             
-            delegate?.didComplete(ptBegin, curves: curves)
+            if let delegate = delegate where delegate.didComplete(ptBegin, curves: curves) {
+                shapeLayer.path = nil
+            }
         }
     }
     

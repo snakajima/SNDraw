@@ -13,17 +13,41 @@
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="SNDrawView" customModule="SNDraw" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iva-5o-7dO">
+                                <rect key="frame" x="0.0" y="436" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem title="Item" id="VZG-BI-8lk"/>
+                                </items>
+                            </toolbar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZGm-oi-acD" customClass="SNDrawView" customModule="SNDraw" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="436"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Iva-5o-7dO" secondAttribute="trailing" id="ABR-s1-rmr"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Iva-5o-7dO" secondAttribute="bottom" id="Ay1-U2-5LE"/>
+                            <constraint firstItem="ZGm-oi-acD" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Chq-N6-X27"/>
+                            <constraint firstAttribute="trailing" secondItem="ZGm-oi-acD" secondAttribute="trailing" id="Rmv-nO-fHc"/>
+                            <constraint firstItem="Iva-5o-7dO" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ZOd-bF-xVP"/>
+                            <constraint firstItem="Iva-5o-7dO" firstAttribute="top" secondItem="ZGm-oi-acD" secondAttribute="bottom" id="kPf-yw-H5P"/>
+                            <constraint firstItem="ZGm-oi-acD" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="vlQ-MB-Ijp"/>
+                        </constraints>
                     </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
                     <connections>
-                        <outlet property="drawView" destination="8bC-Xf-vdC" id="7It-i0-3gm"/>
+                        <outlet property="drawView" destination="ZGm-oi-acD" id="BVA-B3-ZDK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="210" y="100"/>
         </scene>
     </scenes>
 </document>
