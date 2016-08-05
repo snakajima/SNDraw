@@ -20,7 +20,11 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Iva-5o-7dO">
                                 <rect key="frame" x="0.0" y="436" width="320" height="44"/>
                                 <items>
-                                    <barButtonItem title="Item" id="VZG-BI-8lk"/>
+                                    <barButtonItem title="Clear" id="VZG-BI-8lk">
+                                        <connections>
+                                            <action selector="clear" destination="BYZ-38-t0r" id="zCt-oV-wrn"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZGm-oi-acD" customClass="SNDrawView" customModule="SNDraw" customModuleProvider="target">
