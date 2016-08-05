@@ -12,10 +12,13 @@ public struct SNPath {
     static func pathFrom(elements:[SNPathElement]) -> CGPath {
         let path = CGPathCreateMutable()
         for element in elements {
-            if let move = element as? SNMove {
+            switch(element) {
+            case let move as SNMove:
                 CGPathMoveToPoint(path, nil, move.pt.x, move.pt.y)
-            } else if let curve = element as? SNQuadCurve {
+            case let curve as SNQuadCurve:
                 CGPathAddQuadCurveToPoint(path, nil, curve.cpt.x, curve.cpt.y, curve.pt.x, curve.pt.y)
+            default:
+                break
             }
         }
         return path
@@ -24,11 +27,14 @@ public struct SNPath {
     static func polyPathFrom(elements:[SNPathElement]) -> CGPath {
         let path = CGPathCreateMutable()
         for element in elements {
-            if let move = element as? SNMove {
+            switch(element) {
+            case let move as SNMove:
                 CGPathMoveToPoint(path, nil, move.pt.x, move.pt.y)
-            } else if let curve = element as? SNQuadCurve {
+            case let curve as SNQuadCurve:
                 CGPathAddLineToPoint(path, nil, curve.cpt.x, curve.cpt.y)
                 CGPathAddLineToPoint(path, nil, curve.pt.x, curve.pt.y)
+            default:
+                break
             }
         }
         return path
