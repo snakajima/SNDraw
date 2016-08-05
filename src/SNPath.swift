@@ -8,6 +8,33 @@
 
 import UIKit
 
+public struct SNPath {
+    static func pathFrom(elements:[SNPathElement]) -> CGPath {
+        let path = CGPathCreateMutable()
+        for element in elements {
+            if let move = element as? SNMove {
+                CGPathMoveToPoint(path, nil, move.pt.x, move.pt.y)
+            } else if let curve = element as? SNQuadCurve {
+                CGPathAddQuadCurveToPoint(path, nil, curve.cpt.x, curve.cpt.y, curve.pt.x, curve.pt.y)
+            }
+        }
+        return path
+    }
+    
+    static func polyPathFrom(elements:[SNPathElement]) -> CGPath {
+        let path = CGPathCreateMutable()
+        for element in elements {
+            if let move = element as? SNMove {
+                CGPathMoveToPoint(path, nil, move.pt.x, move.pt.y)
+            } else if let curve = element as? SNQuadCurve {
+                CGPathAddLineToPoint(path, nil, curve.cpt.x, curve.cpt.y)
+                CGPathAddLineToPoint(path, nil, curve.pt.x, curve.pt.y)
+            }
+        }
+        return path
+    }
+}
+
 public protocol SNPathElement {
 }
 
@@ -31,9 +58,3 @@ public struct SNQuadCurve:SNPathElement {
     }
 }
 
-extension ArrayLiteralConvertible where Element == SNPathElement {
-    func __conversion() -> CGPath {
-        let path = CGPathCreateMutable()
-        return path
-    }
-}

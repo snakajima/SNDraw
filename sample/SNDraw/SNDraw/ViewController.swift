@@ -39,20 +39,9 @@ class ViewController: UIViewController {
 extension ViewController : SNDrawViewDelegate {
     func didComplete(elements:[SNPathElement]) -> Bool {
         print("complete", elements.count)
-        let pathLine = CGPathCreateMutable()
-        let pathCurve = CGPathCreateMutable()
-        for element in elements {
-            if let move = element as? SNMove {
-                CGPathMoveToPoint(pathLine, nil, move.pt.x, move.pt.y)
-                CGPathMoveToPoint(pathCurve, nil, move.pt.x, move.pt.y)
-            } else if let curve = element as? SNQuadCurve {
-                CGPathAddLineToPoint(pathLine, nil, curve.cpt.x, curve.cpt.y)
-                CGPathAddLineToPoint(pathLine, nil, curve.pt.x, curve.pt.y)
-                CGPathAddQuadCurveToPoint(pathCurve, nil, curve.cpt.x, curve.cpt.y, curve.pt.x, curve.pt.y)
-            }
-        }
+
         let layerCurve = CAShapeLayer()
-        layerCurve.path = pathCurve
+        layerCurve.path = SNPath.pathFrom(elements)
         layerCurve.lineWidth = 1
         layerCurve.fillColor = UIColor.clearColor().CGColor
         layerCurve.strokeColor = UIColor.greenColor().CGColor
@@ -60,7 +49,7 @@ extension ViewController : SNDrawViewDelegate {
         layers.append(layerCurve)
 
         let layerLine = CAShapeLayer()
-        layerLine.path = pathLine
+        layerLine.path = SNPath.polyPathFrom(elements)
         layerLine.lineWidth = 1
         layerLine.fillColor = UIColor.clearColor().CGColor
         layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.2).CGColor
