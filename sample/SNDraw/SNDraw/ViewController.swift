@@ -30,6 +30,10 @@ class ViewController: UIViewController {
         }
         layers.removeAll()
     }
+    
+    @IBAction func slide(slider:UISlider) {
+        drawView?.minSegment = CGFloat(slider.value)
+    }
 }
 
 extension ViewController : SNDrawViewDelegate {
