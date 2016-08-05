@@ -57,19 +57,40 @@ public struct SNLine:SNPathElement {
 }
 
 public struct SNQuadCurve:SNPathElement {
-    let cpt:CGPoint
+    let cp:CGPoint
     let pt:CGPoint
     init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
-        cpt = CGPointMake(cpx, cpy)
+        cp = CGPointMake(cpx, cpy)
         pt = CGPointMake(x, y)
     }
 
     public func addToPath(path:CGMutablePath) {
-        CGPathAddQuadCurveToPoint(path, nil, cpt.x, cpt.y, pt.x, pt.y)
+        CGPathAddQuadCurveToPoint(path, nil, cp.x, cp.y, pt.x, pt.y)
     }
 
     public func addToPathAsPolygon(path:CGMutablePath) {
-        CGPathAddLineToPoint(path, nil, cpt.x, cpt.y)
+        CGPathAddLineToPoint(path, nil, cp.x, cp.y)
+        CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+    }
+}
+
+public struct SNBezierCurve:SNPathElement {
+    let cp1:CGPoint
+    let cp2:CGPoint
+    let pt:CGPoint
+    init(cp1x: CGFloat, cp1y: CGFloat, cp2x: CGFloat, cp2y: CGFloat,x: CGFloat, y: CGFloat) {
+        cp1 = CGPointMake(cp1x, cp1y)
+        cp2 = CGPointMake(cp2x, cp2y)
+        pt = CGPointMake(x, y)
+    }
+
+    public func addToPath(path:CGMutablePath) {
+        CGPathAddCurveToPoint(path, nil, cp1.x, cp1.y, cp2.x, cp2.y, pt.x, pt.y)
+    }
+
+    public func addToPathAsPolygon(path:CGMutablePath) {
+        CGPathAddLineToPoint(path, nil, cp1.x, cp1.y)
+        CGPathAddLineToPoint(path, nil, cp2.x, cp2.y)
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
     }
 }
