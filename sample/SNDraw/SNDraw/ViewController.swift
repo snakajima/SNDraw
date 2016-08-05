@@ -28,6 +28,18 @@ class ViewController: UIViewController {
 extension ViewController : SNDrawViewDelegate {
     func didComplete(ptBegin:CGPoint, curves:[SNQuadCurve]) -> Bool {
         print("complete", curves.count)
+        let path = CGPathCreateMutable()
+        CGPathMoveToPoint(path, nil, ptBegin.x, ptBegin.y)
+        for curve in curves {
+            CGPathAddLineToPoint(path, nil, curve.cpt.x, curve.cpt.y)
+            CGPathAddLineToPoint(path, nil, curve.pt.x, curve.pt.y)
+        }
+        let layer = CAShapeLayer()
+        layer.path = path
+        layer.lineWidth = 1
+        layer.fillColor = UIColor.clearColor().CGColor
+        layer.strokeColor = UIColor.blueColor().CGColor
+        self.view.layer.addSublayer(layer)
         return true
     }
 }

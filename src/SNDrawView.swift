@@ -37,7 +37,7 @@ public class SNDrawView: UIView {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
         shapeLayer.lineWidth = 10.0
-        shapeLayer.strokeColor = UIColor.blueColor().CGColor
+        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
         shapeLayer.fillColor = UIColor.clearColor().CGColor
@@ -104,6 +104,7 @@ public class SNDrawView: UIView {
             print("End", count)
             // NOTE: We intentionally ignore the last point to reduce the noise.
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
+            curves.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             shapeLayer.path = path
             
             delegate?.didComplete(ptBegin, curves: curves)
