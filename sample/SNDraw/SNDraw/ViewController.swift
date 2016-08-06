@@ -32,7 +32,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func slide(slider:UISlider) {
-        drawView?.minSegment = CGFloat(slider.value)
+        drawView?.builder.minSegment = CGFloat(slider.value)
     }
 }
 

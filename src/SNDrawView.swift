@@ -14,7 +14,7 @@ public protocol SNDrawViewDelegate:NSObjectProtocol {
 }
 
 public class SNDrawView: UIView {
-    public var minSegment = 25.0 as CGFloat
+    public var builder = SNPathBuilder(minSegment: 25.0)
     weak public var delegate:SNDrawViewDelegate?
     private var elements = [SNPathElement]()
     private var path = CGPathCreateMutable()
@@ -57,7 +57,7 @@ public class SNDrawView: UIView {
             let pt = touch.locationInView(self)
             let (dx, dy) = (pt.x - last.x, pt.y - last.y)
             segment += sqrt(dx * dx + dy * dy)
-            if segment > minSegment {
+            if segment > builder.minSegment {
                 if !fEdge {
                     let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                     CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)

@@ -13,6 +13,7 @@
 		740A41351D50AA9F006F446E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 740A41341D50AA9F006F446E /* Assets.xcassets */; };
 		740A41381D50AA9F006F446E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 740A41361D50AA9F006F446E /* LaunchScreen.storyboard */; };
 		740A41411D50AC0C006F446E /* SNDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740A41401D50AC0C006F446E /* SNDrawView.swift */; };
+		745853361D55C84800CDE58D /* SNPathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745853351D55C84800CDE58D /* SNPathBuilder.swift */; };
 		74A20CA51D54B86D000DD4EC /* SNPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A20CA41D54B86D000DD4EC /* SNPath.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		740A41371D50AA9F006F446E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		740A41391D50AA9F006F446E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		740A41401D50AC0C006F446E /* SNDrawView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNDrawView.swift; sourceTree = "<group>"; };
+		745853351D55C84800CDE58D /* SNPathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNPathBuilder.swift; sourceTree = "<group>"; };
 		74A20CA41D54B86D000DD4EC /* SNPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNPath.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,8 +74,9 @@
 		740A413F1D50AB31006F446E /* src */ = {
 			isa = PBXGroup;
 			children = (
-				740A41401D50AC0C006F446E /* SNDrawView.swift */,
 				74A20CA41D54B86D000DD4EC /* SNPath.swift */,
+				740A41401D50AC0C006F446E /* SNDrawView.swift */,
+				745853351D55C84800CDE58D /* SNPathBuilder.swift */,
 			);
 			name = src;
 			path = ../../src;
@@ -150,6 +153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				745853361D55C84800CDE58D /* SNPathBuilder.swift in Sources */,
 				740A41301D50AA9F006F446E /* ViewController.swift in Sources */,
 				74A20CA51D54B86D000DD4EC /* SNPath.swift in Sources */,
 				740A41411D50AC0C006F446E /* SNDrawView.swift in Sources */,
