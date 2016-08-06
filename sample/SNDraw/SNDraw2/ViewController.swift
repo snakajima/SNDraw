@@ -36,43 +36,41 @@ class ViewController: UIViewController {
             case .started:
                 self.view.layer.backgroundColor = validColor
                 layers[index].backgroundColor = normalColor
-                layers.filter({ (layer) -> Bool in
-                    layer != layers[index]
-                }).forEach({ (layer) in
-                    layer.backgroundColor = normalColor
-                })
             case .drawing:
                 self.view.layer.backgroundColor = normalColor
-                layers[index].backgroundColor = validColor
+                for (i, layer) in layers.enumerate() {
+                    layer.backgroundColor = (i == index) ? validColor : normalColor
+                }
             case .done:
                 self.view.layer.backgroundColor = normalColor
                 layers[index].backgroundColor = normalColor
             }
         }
     }
-    private let layers = [CALayer(), CALayer()]
+    private let layers = [CALayer(), CALayer(), CALayer(), CALayer(), CALayer()]
     private let normalColor = UIColor.whiteColor().CGColor
     private let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).CGColor
     private let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).CGColor
     private let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).CGColor
-    private let radius = 100.0 as CGFloat
+    private var radius = 100.0 as CGFloat
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let frame = CGRectMake(0, 0, radius * 2, radius * 2)
         layers.forEach() { (layer: CALayer) in
-            layer.frame = frame
             layer.backgroundColor = validColor
-            layer.cornerRadius = radius
             self.view.layer.addSublayer(layer)
         }
     }
     
     override func viewDidLayoutSubviews() {
         let size = self.view.frame.size
-        layers[0].position = CGPointMake(0, size.height)
-        layers[1].position = CGPointMake(size.width, size.height)
+        radius = size.width / 10
+        let r2 = radius * 2
+        for (i, layer) in layers.enumerate() {
+            layer.frame = CGRectMake(CGFloat(i) * r2, size.height - r2, r2, r2)
+            layer.cornerRadius = radius
+        }
     }
 
     override func didReceiveMemoryWarning() {
