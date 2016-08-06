@@ -137,11 +137,18 @@ class ViewController: UIViewController {
         if let _ = touches.first {
             shapeLayer.path = builder.end()
         }
+        switch(status) {
+        case .done:
+            break
+        default:
+            shapeLayer.path = nil
+        }
         status = .none
     }
     
     override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
         print("touchesCancelled")
+        shapeLayer.path = nil
         status = .none
     }
 
