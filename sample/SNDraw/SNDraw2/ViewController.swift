@@ -17,11 +17,40 @@ enum DrawStatus: Int {
 }
 
 class ViewController: UIViewController {
-    private let status = DrawStatus.none
+    private var index = 0
+    private var status = DrawStatus.none {
+        didSet {
+            switch(oldValue) {
+            default:
+                break
+            }
+            
+            switch(status) {
+            case .none:
+                self.view.layer.backgroundColor = normalColor
+                layers.forEach({ (layer) in
+                    layer.backgroundColor = validColor
+                })
+            case .invalid:
+                self.view.layer.backgroundColor = invalidColor
+            case .valid:
+                self.view.layer.backgroundColor = validColor
+                layers[index].backgroundColor = normalColor
+                layers.filter({ (layer) -> Bool in
+                    layer != layers[index]
+                }).forEach({ (layer) in
+                    layer.backgroundColor = normalColor
+                })
+            default:
+                break
+            }
+        }
+    }
     private let layers = [CALayer(), CALayer()]
-    private let invalidColor = UIColor(red: 1, green: 0, blue: 0, alpha: 0.5).CGColor
-    private let validColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.25).CGColor
-    private let activeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.5).CGColor
+    private let normalColor = UIColor.whiteColor().CGColor
+    private let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).CGColor
+    private let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).CGColor
+    private let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).CGColor
     private let radius = 100.0 as CGFloat
 
     override func viewDidLoad() {
@@ -62,7 +91,18 @@ class ViewController: UIViewController {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
-            shapeLayer.path = builder.start(touch.locationInView(self.view))
+            let pt = touch.locationInView(self.view)
+            shapeLayer.path = builder.start(pt)
+            var newStatus = DrawStatus.invalid
+            for (i, layer) in layers.enumerate() {
+                let pos = layer.position
+                let (dx, dy) = (pos.x - pt.x, pos.y - pt.y)
+                if dx * dx + dy * dy < radius * radius {
+                    index = i
+                    newStatus = .valid
+                }
+            }
+            status = newStatus
         }
     }
     
@@ -78,10 +118,12 @@ class ViewController: UIViewController {
         if let _ = touches.first {
             shapeLayer.path = builder.end()
         }
+        status = .none
     }
     
     override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
         print("touchesCancelled")
+        status = .none
     }
 
 }
