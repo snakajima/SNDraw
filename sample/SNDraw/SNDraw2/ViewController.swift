@@ -11,7 +11,7 @@ import UIKit
 enum DrawStatus: Int {
     case none = 0
     case invalid = 1
-    case valid = 2
+    case started = 2
     case drawing = 3
     case done = 4
 }
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
                 })
             case .invalid:
                 self.view.layer.backgroundColor = invalidColor
-            case .valid:
+            case .started:
                 self.view.layer.backgroundColor = validColor
                 layers[index].backgroundColor = normalColor
                 layers.filter({ (layer) -> Bool in
@@ -41,8 +41,12 @@ class ViewController: UIViewController {
                 }).forEach({ (layer) in
                     layer.backgroundColor = normalColor
                 })
-            default:
-                break
+            case .drawing:
+                self.view.layer.backgroundColor = normalColor
+                layers[index].backgroundColor = validColor
+            case .done:
+                self.view.layer.backgroundColor = normalColor
+                layers[index].backgroundColor = normalColor
             }
         }
     }
@@ -95,20 +99,37 @@ class ViewController: UIViewController {
             shapeLayer.path = builder.start(pt)
             var newStatus = DrawStatus.invalid
             for (i, layer) in layers.enumerate() {
-                let pos = layer.position
-                let (dx, dy) = (pos.x - pt.x, pos.y - pt.y)
-                if dx * dx + dy * dy < radius * radius {
+                if inRange(layer, pt: pt) {
                     index = i
-                    newStatus = .valid
+                    newStatus = .started
                 }
             }
             status = newStatus
         }
     }
     
+    func inRange(layer:CALayer, pt:CGPoint) -> Bool {
+        let pos = layer.position
+        let (dx, dy) = (pos.x - pt.x, pos.y - pt.y)
+        return dx * dx + dy * dy < radius * radius
+    }
+    
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
-            if let path = builder.move(touch.locationInView(self.view)) {
+            let pt = touch.locationInView(self.view)
+            switch(status) {
+            case .started:
+                if !inRange(layers[index], pt: pt) {
+                    status = .drawing
+                }
+            case .drawing:
+                if inRange(layers[index], pt: pt) {
+                    status = .done
+                }
+            default:
+                break
+            }
+            if let path = builder.move(pt) {
                 shapeLayer.path = path
             }
         }
