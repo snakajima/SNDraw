@@ -96,7 +96,6 @@ class ViewController: UIViewController {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if let touch = touches.first {
             let pt = touch.locationInView(self.view)
-            shapeLayer.path = builder.start(pt)
             var newStatus = DrawStatus.invalid
             for (i, layer) in layers.enumerate() {
                 if inRange(layer, pt: pt) {
@@ -121,16 +120,17 @@ class ViewController: UIViewController {
             case .started:
                 if !inRange(layers[index], pt: pt) {
                     status = .drawing
+                    shapeLayer.path = builder.start(pt)
                 }
             case .drawing:
+                if let path = builder.move(pt) {
+                    shapeLayer.path = path
+                }
                 if inRange(layers[index], pt: pt) {
                     status = .done
                 }
             default:
                 break
-            }
-            if let path = builder.move(pt) {
-                shapeLayer.path = path
             }
         }
     }
