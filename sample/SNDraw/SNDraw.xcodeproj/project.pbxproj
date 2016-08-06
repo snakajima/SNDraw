@@ -14,6 +14,13 @@
 		740A41381D50AA9F006F446E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 740A41361D50AA9F006F446E /* LaunchScreen.storyboard */; };
 		740A41411D50AC0C006F446E /* SNDrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740A41401D50AC0C006F446E /* SNDrawView.swift */; };
 		745853361D55C84800CDE58D /* SNPathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745853351D55C84800CDE58D /* SNPathBuilder.swift */; };
+		7458533E1D55E34800CDE58D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7458533D1D55E34800CDE58D /* AppDelegate.swift */; };
+		745853401D55E34800CDE58D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7458533F1D55E34800CDE58D /* ViewController.swift */; };
+		745853431D55E34800CDE58D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 745853411D55E34800CDE58D /* Main.storyboard */; };
+		745853451D55E34800CDE58D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 745853441D55E34800CDE58D /* Assets.xcassets */; };
+		745853481D55E34800CDE58D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 745853461D55E34800CDE58D /* LaunchScreen.storyboard */; };
+		7458534D1D55E35A00CDE58D /* SNPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A20CA41D54B86D000DD4EC /* SNPath.swift */; };
+		7458534E1D55E35D00CDE58D /* SNPathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745853351D55C84800CDE58D /* SNPathBuilder.swift */; };
 		74A20CA51D54B86D000DD4EC /* SNPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A20CA41D54B86D000DD4EC /* SNPath.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,11 +34,25 @@
 		740A41391D50AA9F006F446E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		740A41401D50AC0C006F446E /* SNDrawView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNDrawView.swift; sourceTree = "<group>"; };
 		745853351D55C84800CDE58D /* SNPathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNPathBuilder.swift; sourceTree = "<group>"; };
+		7458533B1D55E34800CDE58D /* SNDraw2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SNDraw2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7458533D1D55E34800CDE58D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7458533F1D55E34800CDE58D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		745853421D55E34800CDE58D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		745853441D55E34800CDE58D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		745853471D55E34800CDE58D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		745853491D55E34800CDE58D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		74A20CA41D54B86D000DD4EC /* SNPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNPath.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		740A41271D50AA9F006F446E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		745853381D55E34800CDE58D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +67,7 @@
 			children = (
 				740A413F1D50AB31006F446E /* src */,
 				740A412C1D50AA9F006F446E /* SNDraw */,
+				7458533C1D55E34800CDE58D /* SNDraw2 */,
 				740A412B1D50AA9F006F446E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				740A412A1D50AA9F006F446E /* SNDraw.app */,
+				7458533B1D55E34800CDE58D /* SNDraw2.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -82,6 +105,19 @@
 			path = ../../src;
 			sourceTree = "<group>";
 		};
+		7458533C1D55E34800CDE58D /* SNDraw2 */ = {
+			isa = PBXGroup;
+			children = (
+				7458533D1D55E34800CDE58D /* AppDelegate.swift */,
+				7458533F1D55E34800CDE58D /* ViewController.swift */,
+				745853411D55E34800CDE58D /* Main.storyboard */,
+				745853441D55E34800CDE58D /* Assets.xcassets */,
+				745853461D55E34800CDE58D /* LaunchScreen.storyboard */,
+				745853491D55E34800CDE58D /* Info.plist */,
+			);
+			path = SNDraw2;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,6 +138,23 @@
 			productReference = 740A412A1D50AA9F006F446E /* SNDraw.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7458533A1D55E34800CDE58D /* SNDraw2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7458534A1D55E34800CDE58D /* Build configuration list for PBXNativeTarget "SNDraw2" */;
+			buildPhases = (
+				745853371D55E34800CDE58D /* Sources */,
+				745853381D55E34800CDE58D /* Frameworks */,
+				745853391D55E34800CDE58D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SNDraw2;
+			productName = SNDraw2;
+			productReference = 7458533B1D55E34800CDE58D /* SNDraw2.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -113,6 +166,9 @@
 				ORGANIZATIONNAME = "Satoshi Nakajima";
 				TargetAttributes = {
 					740A41291D50AA9F006F446E = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					7458533A1D55E34800CDE58D = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
 				};
@@ -131,6 +187,7 @@
 			projectRoot = "";
 			targets = (
 				740A41291D50AA9F006F446E /* SNDraw */,
+				7458533A1D55E34800CDE58D /* SNDraw2 */,
 			);
 		};
 /* End PBXProject section */
@@ -143,6 +200,16 @@
 				740A41381D50AA9F006F446E /* LaunchScreen.storyboard in Resources */,
 				740A41351D50AA9F006F446E /* Assets.xcassets in Resources */,
 				740A41331D50AA9F006F446E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		745853391D55E34800CDE58D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				745853481D55E34800CDE58D /* LaunchScreen.storyboard in Resources */,
+				745853451D55E34800CDE58D /* Assets.xcassets in Resources */,
+				745853431D55E34800CDE58D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +228,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		745853371D55E34800CDE58D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				745853401D55E34800CDE58D /* ViewController.swift in Sources */,
+				7458533E1D55E34800CDE58D /* AppDelegate.swift in Sources */,
+				7458534D1D55E35A00CDE58D /* SNPath.swift in Sources */,
+				7458534E1D55E35D00CDE58D /* SNPathBuilder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -176,6 +254,22 @@
 			isa = PBXVariantGroup;
 			children = (
 				740A41371D50AA9F006F446E /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		745853411D55E34800CDE58D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				745853421D55E34800CDE58D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		745853461D55E34800CDE58D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				745853471D55E34800CDE58D /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -290,6 +384,28 @@
 			};
 			name = Release;
 		};
+		7458534B1D55E34800CDE58D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SNDraw2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudreaders.SNDraw2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7458534C1D55E34800CDE58D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SNDraw2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cloudreaders.SNDraw2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -310,6 +426,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		7458534A1D55E34800CDE58D /* Build configuration list for PBXNativeTarget "SNDraw2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7458534B1D55E34800CDE58D /* Debug */,
+				7458534C1D55E34800CDE58D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
