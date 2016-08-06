@@ -47,6 +47,9 @@ public struct SNMove:SNPathElement {
 
 public struct SNLine:SNPathElement {
     let pt:CGPoint
+    init(x:CGFloat, y:CGFloat) {
+        pt = CGPointMake(x,y)
+    }
 
     public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)

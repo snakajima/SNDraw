@@ -139,6 +139,14 @@ class ViewController: UIViewController {
         }
         switch(status) {
         case .done:
+            var elements = builder.elements
+            if let move = elements.first as? SNMove {
+                elements[0] = SNLine(x: move.pt.x, y:move.pt.y)
+            }
+            let pt = CGPointMake(CGFloat(index * 2 + 1) * radius, self.view.frame.size.height)
+            elements.insert(SNMove(x: pt.x, y: pt.y), atIndex: 0)
+            elements.append(SNLine(x: pt.x, y: pt.y))
+            shapeLayer.path = SNPath.pathFrom(elements)
             break
         default:
             shapeLayer.path = nil
