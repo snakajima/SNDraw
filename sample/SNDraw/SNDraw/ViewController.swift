@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         drawView?.delegate = self
+        drawView?.shapeLayer.lineWidth = 5.0
     }
 
     override func didReceiveMemoryWarning() {

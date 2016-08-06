@@ -16,8 +16,7 @@ public protocol SNDrawViewDelegate:NSObjectProtocol {
 public class SNDrawView: UIView {
     public var builder = SNPathBuilder(minSegment: 25.0)
     weak public var delegate:SNDrawViewDelegate?
-
-    private lazy var shapeLayer:CAShapeLayer = {
+    public lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.mainScreen().scale
         shapeLayer.lineWidth = 10.0
@@ -47,7 +46,7 @@ public class SNDrawView: UIView {
         if let _ = touches.first {
             shapeLayer.path = builder.end()
             
-            if let delegate = delegate where delegate.didComplete(builder.elements) {
+            if delegate?.didComplete(builder.elements) == true {
                 shapeLayer.path = nil
             }
         }
