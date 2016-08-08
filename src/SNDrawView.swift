@@ -14,7 +14,7 @@ public protocol SNDrawViewDelegate:NSObjectProtocol {
 }
 
 public class SNDrawView: UIView {
-    public var builder = SNPathBuilder(minSegment: 25.0)
+    public private(set) var builder = SNPathBuilder(minSegment: 25.0)
     weak public var delegate:SNDrawViewDelegate?
     public lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()

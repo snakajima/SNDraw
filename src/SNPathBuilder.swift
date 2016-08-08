@@ -10,7 +10,7 @@ import UIKit
 
 public struct SNPathBuilder {
     public var minSegment:CGFloat
-    public private(set) var elements = [SNPathElement]()
+    public private(set) var elements:[SNPathElement]
     
     private var path = CGPathCreateMutable()
     private var length = 0 as CGFloat
@@ -21,6 +21,7 @@ public struct SNPathBuilder {
     private var count = 0
 
     init(minSegment:CGFloat) {
+        self.elements = [SNPathElement]()
         self.minSegment = minSegment
     }
     
