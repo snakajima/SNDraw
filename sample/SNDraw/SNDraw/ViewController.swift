@@ -56,6 +56,8 @@ extension ViewController : SNDrawViewDelegate {
         layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.2).CGColor
         self.view.layer.addSublayer(layerLine)
         layers.append(layerLine)
+        
+        print(SNPath.svgFrom(elements))
 
         return true
     }

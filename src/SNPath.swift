@@ -20,11 +20,20 @@ public struct SNPath {
             return element.addToPathAsPolygon(path)
         }
     }
+    
+    static func svgFrom(elements:[SNPathElement]) -> String {
+        var prev:SNPathElement? = nil
+        return elements.reduce("") { (svn, element) -> String in
+            defer { prev = element }
+            return svn + element.svgString(prev)
+        }
+    }
 }
 
 public protocol SNPathElement {
     func addToPath(path:CGMutablePath) -> CGMutablePath
     func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
+    func svgString(prev:SNPathElement?) -> String
 }
 
 extension SNPathElement {
@@ -43,6 +52,10 @@ public struct SNMove:SNPathElement {
         CGPathMoveToPoint(path, nil, pt.x, pt.y)
         return path
     }
+    
+    public func svgString(_:SNPathElement?) -> String {
+        return "M\(pt.x),\(pt.y)"
+    }
 }
 
 public struct SNLine:SNPathElement {
@@ -54,6 +67,11 @@ public struct SNLine:SNPathElement {
     public func addToPath(path:CGMutablePath) -> CGMutablePath {
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
         return path
+    }
+
+    public func svgString(prev:SNPathElement?) -> String {
+        let prefix = prev is SNLine ? " " : "L"
+        return "\(prefix)\(pt.x),\(pt.y)"
     }
 }
 
@@ -74,6 +92,11 @@ public struct SNQuadCurve:SNPathElement {
         CGPathAddLineToPoint(path, nil, cp.x, cp.y)
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
         return path
+    }
+
+    public func svgString(prev:SNPathElement?) -> String {
+        let prefix = prev is SNQuadCurve ? " " : "Q"
+        return "\(prefix)\(cp.x),\(cp.y),\(pt.x),\(pt.y)"
     }
 }
 
@@ -97,6 +120,11 @@ public struct SNBezierCurve:SNPathElement {
         CGPathAddLineToPoint(path, nil, cp2.x, cp2.y)
         CGPathAddLineToPoint(path, nil, pt.x, pt.y)
         return path
+    }
+
+    public func svgString(prev:SNPathElement?) -> String {
+        let prefix = prev is SNBezierCurve ? " " : "C"
+        return "\(prefix)\(cp1.x),\(cp1.y),\(cp2.x),\(cp2.y)\(pt.x),\(pt.y)"
     }
 }
 
