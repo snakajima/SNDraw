@@ -55,7 +55,7 @@ public struct SNPathBuilder {
             length = 0.0
             count = count + 1
         } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
-            print("Tight turn", count)
+            //print("Tight turn", count)
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             pathToReturn = path
@@ -76,7 +76,7 @@ public struct SNPathBuilder {
     }
     
     public mutating func end() -> CGPath {
-        print("End", count)
+        //print("End", count)
         // NOTE: We intentionally ignore the last point to reduce the noise.
         CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
         elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))

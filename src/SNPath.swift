@@ -34,6 +34,7 @@ public protocol SNPathElement {
     func addToPath(path:CGMutablePath) -> CGMutablePath
     func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
     func svgString(prev:SNPathElement?) -> String
+    func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement
 }
 
 extension SNPathElement {
@@ -56,6 +57,10 @@ public struct SNMove:SNPathElement {
     public func svgString(_:SNPathElement?) -> String {
         return "M\(pt.x),\(pt.y)"
     }
+
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return SNMove(x: pt.x + x, y: pt.y + y)
+    }
 }
 
 public struct SNLine:SNPathElement {
@@ -72,6 +77,10 @@ public struct SNLine:SNPathElement {
     public func svgString(prev:SNPathElement?) -> String {
         let prefix = prev is SNLine ? " " : "L"
         return "\(prefix)\(pt.x),\(pt.y)"
+    }
+
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return SNLine(x: pt.x + x, y: pt.y + y)
     }
 }
 
@@ -97,6 +106,10 @@ public struct SNQuadCurve:SNPathElement {
     public func svgString(prev:SNPathElement?) -> String {
         let prefix = prev is SNQuadCurve ? " " : "Q"
         return "\(prefix)\(cp.x),\(cp.y),\(pt.x),\(pt.y)"
+    }
+
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return SNQuadCurve(cpx: cp.x + x, cpy: cp.y + y, x: pt.x + x, y: pt.y + y)
     }
 }
 
@@ -125,6 +138,10 @@ public struct SNBezierCurve:SNPathElement {
     public func svgString(prev:SNPathElement?) -> String {
         let prefix = prev is SNBezierCurve ? " " : "C"
         return "\(prefix)\(cp1.x),\(cp1.y),\(cp2.x),\(cp2.y)\(pt.x),\(pt.y)"
+    }
+
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return SNBezierCurve(cp1x: cp1.x + x, cp1y: cp1.y + y, cp2x: cp2.x + x, cp2y: cp2.y + y, x: pt.x + x, y: pt.y + y)
     }
 }
 
