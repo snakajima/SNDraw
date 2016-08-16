@@ -99,6 +99,7 @@ class ViewController: UIViewController {
                 if inRange(layer, pt: pt) {
                     index = i
                     newStatus = .started
+                    shapeLayer.path = builder.start(pt)
                 }
             }
             status = newStatus
@@ -116,9 +117,11 @@ class ViewController: UIViewController {
             let pt = touch.locationInView(self.view)
             switch(status) {
             case .started:
+                if let path = builder.move(pt) {
+                    shapeLayer.path = path
+                }
                 if !inRange(layers[index], pt: pt) {
                     status = .drawing
-                    shapeLayer.path = builder.start(pt)
                 }
             case .drawing:
                 if let path = builder.move(pt) {
