@@ -43,6 +43,7 @@ public struct SNPathBuilder {
         let (dx, dy) = (pt.x - last.x, pt.y - last.y)
         length += sqrt(dx * dx + dy * dy)
         if length > minSegment {
+            // Detected enough movement. Add a quad segment, if we are not at the edge.
             if !fEdge {
                 let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
@@ -55,7 +56,7 @@ public struct SNPathBuilder {
             length = 0.0
             count = count + 1
         } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
-            //print("Tight turn", count)
+            // Detected a "turning back". Add a quard segment, and turn on the fEdge flag.
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             pathToReturn = path
@@ -65,6 +66,7 @@ public struct SNPathBuilder {
             length = 0.0
             count = count + 1
         } else {
+            // Neigher. Return the path with a line to the current point as a transient path.
             let pathTemp = CGPathCreateMutableCopy(path)
             CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
             pathToReturn = pathTemp
