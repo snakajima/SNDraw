@@ -8,6 +8,19 @@
 
 import UIKit
 
+extension CGPath {
+    func forEach(@noescape body: @convention(block) (CGPathElement) -> Void) {
+        typealias Body = @convention(block) (CGPathElement) -> Void
+        func callback(info: UnsafeMutablePointer<Void>, element: UnsafePointer<CGPathElement>) {
+            let body = unsafeBitCast(info, Body.self)
+            body(element.memory)
+        }
+        print(sizeofValue(body))
+        let unsafeBody = unsafeBitCast(body, UnsafeMutablePointer<Void>.self)
+        CGPathApply(self, unsafeBody, callback)
+    }
+}
+
 public struct SNPath {
     static func pathFrom(elements:[SNPathElement]) -> CGPath {
         return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
@@ -28,6 +41,25 @@ public struct SNPath {
             return svn + element.svgString(prev)
         }
     }
+
+    static func elementsFromPath(path:CGPath) -> [SNPathElement] {
+        var elements = [SNPathElement]()
+        path.forEach { e in
+            switch(e.type) {
+            case .MoveToPoint:
+                elements.append(SNMove(pt: e.points[0]))
+            case .AddLineToPoint:
+                elements.append(SNLine(pt: e.points[0]))
+            case .AddQuadCurveToPoint:
+                elements.append(SNQuadCurve(cp: e.points[0], pt: e.points[1]))
+            case .AddCurveToPoint:
+                elements.append(SNBezierCurve(cp1: e.points[0], cp2: e.points[1], pt: e.points[2]))
+            case .CloseSubpath:
+                elements.append(SNCloseSubpath())
+            }
+        }
+        return elements
+    }
 }
 
 public protocol SNPathElement {
@@ -43,10 +75,26 @@ extension SNPathElement {
     }
 }
 
+public struct SNCloseSubpath:SNPathElement {
+    public func addToPath(path:CGMutablePath) -> CGMutablePath {
+        CGPathCloseSubpath(path)
+        return path
+    }
+    public func svgString(prev:SNPathElement?) -> String {
+        return "Z"
+    }
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return self
+    }
+}
+
 public struct SNMove:SNPathElement {
     let pt:CGPoint
     init(x:CGFloat, y:CGFloat) {
         pt = CGPointMake(x,y)
+    }
+    init(pt:CGPoint) {
+        self.pt = pt
     }
     
     public func addToPath(path:CGMutablePath) -> CGMutablePath {
@@ -67,6 +115,9 @@ public struct SNLine:SNPathElement {
     let pt:CGPoint
     init(x:CGFloat, y:CGFloat) {
         pt = CGPointMake(x,y)
+    }
+    init(pt:CGPoint) {
+        self.pt = pt
     }
 
     public func addToPath(path:CGMutablePath) -> CGMutablePath {
@@ -90,6 +141,10 @@ public struct SNQuadCurve:SNPathElement {
     init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
         cp = CGPointMake(cpx, cpy)
         pt = CGPointMake(x, y)
+    }
+    init(cp:CGPoint, pt:CGPoint) {
+        self.cp = cp
+        self.pt = pt
     }
 
     public func addToPath(path:CGMutablePath) -> CGMutablePath {
@@ -121,6 +176,11 @@ public struct SNBezierCurve:SNPathElement {
         cp1 = CGPointMake(cp1x, cp1y)
         cp2 = CGPointMake(cp2x, cp2y)
         pt = CGPointMake(x, y)
+    }
+    init(cp1:CGPoint, cp2:CGPoint, pt:CGPoint) {
+        self.cp1 = cp1
+        self.cp2 = cp2
+        self.pt = pt
     }
 
     public func addToPath(path:CGMutablePath) -> CGMutablePath {

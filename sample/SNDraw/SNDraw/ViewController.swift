@@ -43,6 +43,8 @@ extension ViewController : SNDrawViewDelegate {
 
         let layerCurve = CAShapeLayer()
         layerCurve.path = SNPath.pathFrom(elements)
+        //let es = SNPath.elementsFromPath(layerCurve.path!)
+        //layerCurve.path = SNPath.pathFrom(es)
         layerCurve.lineWidth = 10
         layerCurve.fillColor = UIColor.clearColor().CGColor
         layerCurve.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
