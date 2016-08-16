@@ -8,8 +8,9 @@ SNDraw is a lightweigt library for iOS, which turns a series of touch events int
 
 ```
 static func pathFrom(elements:[SNPathElement]) -> CGPath
+static func elementsFrom(path:CGPath) -> [SNPathElement]
 ```
-This function converts a series of path elements into a CGPath 
+These functions performs the conversion between a series of path elements and a CGPath 
 
 ```
 static func polyPathFrom(elements:[SNPathElement]) -> CGPath
@@ -18,8 +19,9 @@ This function converts a series of path elements into a CGPath, by turning curve
 
 ```
 static func svgFrom(elements:[SNPathElement]) -> String
+static func elementsFrom(svg:String) -> [SNPathElement]
 ```
-This function converts a series of path elements into a SVG path. 
+These functions perform the conversion between a series of path elements and a SVG path (excluding "arc" commands). 
 
 ## protocol SNPathElement
 

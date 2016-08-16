@@ -15,7 +15,6 @@ extension CGPath {
             let body = unsafeBitCast(info, Body.self)
             body(element.memory)
         }
-        print(sizeofValue(body))
         let unsafeBody = unsafeBitCast(body, UnsafeMutablePointer<Void>.self)
         CGPathApply(self, unsafeBody, callback)
     }
@@ -42,7 +41,7 @@ public struct SNPath {
         }
     }
 
-    static func elementsFromPath(path:CGPath) -> [SNPathElement] {
+    static func elementsFrom(path:CGPath) -> [SNPathElement] {
         var elements = [SNPathElement]()
         path.forEach { e in
             switch(e.type) {
@@ -63,7 +62,7 @@ public struct SNPath {
     
     static let regexSVG = try! NSRegularExpression(pattern: "[a-z][0-9\\-\\.,\\s]*", options: NSRegularExpressionOptions.CaseInsensitive)
     static let regexNUM = try! NSRegularExpression(pattern: "[\\-]*[0-9\\.]+", options: NSRegularExpressionOptions())
-    static func elementsFromSvg(svg:String) -> [SNPathElement] {
+    static func elementsFrom(svg:String) -> [SNPathElement] {
         var elements = [SNPathElement]()
         var pt = CGPointZero
         var cp = CGPointZero // last control point for S command
@@ -205,6 +204,7 @@ public struct SNPath {
                     i += 1
                 }
             default:
+                print("SNPath unsupported command", cmd)
                 break
             }
         }
