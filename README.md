@@ -4,7 +4,7 @@ SNDraw is a lightweigt library for iOS, which turns a series of touch events int
 
 ## struct SNPath
 
-*SNPath* is an abstruct struct, which offers static functions to converts series of path elements (represented in an array of *SNPathElement*) into a CGPath or a SVG path.
+*SNPath* is an abstruct struct, which offers static functions to convert between a series of path elements (represented in an array of *SNPathElement*) and a CGPath or a SVG path.
 
 ```
 static func pathFrom(elements:[SNPathElement]) -> CGPath
@@ -44,9 +44,9 @@ public func svgString(prev:SNPathElement?) -> String
 This function returns the SVG representation of the element. The *prev* specifies the previous path element in the sequence for optimization. 
 
 
-## struct SNMove, SNLine, SNQuadCurve, SNBezierCurve
+## struct SNCloseSubpath, SNMove, SNLine, SNQuadCurve, SNBezierCurve
 
-Those structs are concrete structs of SNPathElement protocol, representing move, line, quadratic curve, and bezier curve element respectively.
+Those structs are concrete structs of SNPathElement protocol, representing close-subpath, move, line, quadratic curve, and bezier curve element respectively.
 
 ## struct SNPathBuilder
 
