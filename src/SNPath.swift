@@ -60,6 +60,156 @@ public struct SNPath {
         }
         return elements
     }
+    
+    static let regexSVG = try! NSRegularExpression(pattern: "[a-z][0-9\\-\\.,\\s]*", options: NSRegularExpressionOptions.CaseInsensitive)
+    static let regexNUM = try! NSRegularExpression(pattern: "[\\-]*[0-9\\.]+", options: NSRegularExpressionOptions())
+    static func elementsFromSvg(svg:String) -> [SNPathElement] {
+        var elements = [SNPathElement]()
+        var pt = CGPointZero
+        var cp = CGPointZero // last control point for S command
+        var prevIndex = svg.startIndex // for performance
+        var prevOffset = 0
+        let matches = SNPath.regexSVG.matchesInString(svg, options: NSMatchingOptions(), range: NSMakeRange(0, svg.characters.count))
+        matches.forEach { match in
+            var start = prevIndex.advancedBy(match.range.location - prevOffset)
+            let cmd = svg[start..<start.advancedBy(1)]
+            start = start.advancedBy(1)
+            let end = start.advancedBy(match.range.length-1)
+            prevIndex = end
+            prevOffset = match.range.location + match.range.length
+            
+            let params = svg[start..<end]
+            let nums = SNPath.regexNUM.matchesInString(params, options: [], range: NSMakeRange(0, params.characters.count))
+            let p = nums.map({ (num) -> CGFloat in
+                let start = params.startIndex.advancedBy(num.range.location)
+                let end = start.advancedBy(num.range.length)
+                return CGFloat((params[start..<end] as NSString).floatValue)
+            })
+            switch(cmd) {
+            case "m":
+                if p.count == 2 {
+                    elements.append(SNMove(x: pt.x+p[0], y: pt.y+p[1]))
+                    pt.x += p[0]
+                    pt.y += p[1]
+                }
+            case "M":
+                if p.count == 2 {
+                    elements.append(SNMove(x: p[0], y: p[1]))
+                    pt.x = p[0]
+                    pt.y = p[1]
+                }
+            case "z", "Z":
+                elements.append(SNCloseSubpath())
+            case "c":
+                var i = 0
+                while(p.count >= i+6) {
+                    elements.append(SNBezierCurve(cp1x: pt.x+p[i], cp1y: pt.y+p[i+1], cp2x: pt.x+p[i+2], cp2y: pt.y+p[i+3], x: pt.x+p[i+4], y: pt.y+p[i+5]))
+                    cp.x = pt.x+p[i+2]
+                    cp.y = pt.y+p[i+3]
+                    pt.x += p[i+4]
+                    pt.y += p[i+5]
+                    i += 6
+                }
+            case "C":
+                var i = 0
+                while(p.count >= i+6) {
+                    elements.append(SNBezierCurve(cp1x: p[i], cp1y: p[i+1], cp2x: p[i+2], cp2y: p[i+3], x: p[i+4], y: p[i+5]))
+                    cp.x = p[i+2]
+                    cp.y = p[i+3]
+                    pt.x = p[i+4]
+                    pt.y = p[i+5]
+                    i += 6
+                }
+            case "q":
+                var i = 0
+                while(p.count >= i+4) {
+                    elements.append(SNQuadCurve(cpx: pt.x+p[i], cpy: pt.y+p[i+1], x: pt.x+p[i+2], y: pt.y+p[i+3]))
+                    cp.x = pt.x+p[i]
+                    cp.y = pt.y+p[i+1]
+                    pt.x += p[i+2]
+                    pt.y += p[i+3]
+                    i += 4
+                }
+            case "Q":
+                var i = 0
+                while(p.count >= i+4) {
+                    elements.append(SNQuadCurve(cpx: p[i], cpy: p[i+1], x: p[i+2], y: p[i+3]))
+                    cp.x = p[i]
+                    cp.y = p[i+1]
+                    pt.x = p[i+2]
+                    pt.y = p[i+3]
+                    i += 4
+                }
+            case "s":
+                var i = 0
+                while(p.count >= i+4) {
+                    elements.append(SNBezierCurve(cp1x: pt.x * 2 - cp.x, cp1y: pt.y * 2 - cp.y, cp2x: pt.x+p[i], cp2y: pt.y+p[i+1], x: pt.x+p[i+2], y: pt.y+p[i+3]))
+                    cp.x = pt.x + p[i]
+                    cp.y = pt.y + p[i+1]
+                    pt.x += p[i+2]
+                    pt.y += p[i+3]
+                    i += 4
+                }
+            case "S":
+                var i = 0
+                while(p.count >= i+4) {
+                    elements.append(SNBezierCurve(cp1x: pt.x * 2 - cp.x, cp1y: pt.y * 2 - cp.y, cp2x: p[i], cp2y: p[i+1], x: p[i+2], y: p[i+3]))
+                    cp.x = p[i]
+                    cp.y = p[i+1]
+                    pt.x = p[i+2]
+                    pt.y = p[i+3]
+                    i += 4
+                }
+            case "l":
+                var i = 0
+                while(p.count >= i+2) {
+                    elements.append(SNLine(x: pt.x+p[i], y: pt.y+p[i+1]))
+                    pt.x += p[i]
+                    pt.y += p[i+1]
+                    i += 2
+                }
+            case "L":
+                var i = 0
+                while(p.count >= i+2) {
+                    elements.append(SNLine(x: p[i], y: p[i+1]))
+                    pt.x = p[i]
+                    pt.y = p[i+1]
+                    i += 2
+                }
+            case "v":
+                var i = 0
+                while(p.count >= i+1) {
+                    elements.append(SNLine(x: pt.x, y: pt.y+p[i]))
+                    pt.y += p[i]
+                    i += 1
+                }
+            case "V":
+                var i = 0
+                while(p.count >= i+1) {
+                    elements.append(SNLine(x: pt.x, y: p[i]))
+                    pt.y = p[i]
+                    i += 1
+                }
+            case "h":
+                var i = 0
+                while(p.count >= i+1) {
+                    elements.append(SNLine(x: pt.x+p[i], y: pt.y))
+                    pt.x += p[i]
+                    i += 1
+                }
+            case "H":
+                var i = 0
+                while(p.count >= i+1) {
+                    elements.append(SNLine(x: p[i], y: pt.y))
+                    pt.x = p[i]
+                    i += 1
+                }
+            default:
+                break
+            }
+        }
+        return elements
+    }
 }
 
 public protocol SNPathElement {
