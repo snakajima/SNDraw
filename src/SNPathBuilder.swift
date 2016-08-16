@@ -14,11 +14,10 @@ public struct SNPathBuilder {
     
     private var path = CGPathCreateMutable()
     private var length = 0 as CGFloat
-    private var anchor = CGPointZero // last anchor point
-    private var last = CGPointZero // last touch point
-    private var delta:CGPoint? // last movement to compare against to detect a sharp turn
+    private var anchor = CGPoint.zero // last anchor point
+    private var last = CGPoint.zero // last touch point
+    private var delta = CGPoint.zero // last movement to compare against to detect a sharp turn
     private var fEdge = true //either the begging or the turning point
-    private var count = 0
 
     init(minSegment:CGFloat) {
         self.elements = [SNPathElement]()
@@ -31,10 +30,8 @@ public struct SNPathBuilder {
         elements = [SNMove(x: pt.x, y: pt.y)]
         anchor = pt
         last = pt
-        delta = nil
         fEdge = true
         length = 0.0
-        count = 0
         return path
     }
 
@@ -54,23 +51,22 @@ public struct SNPathBuilder {
             anchor = pt
             fEdge = false
             length = 0.0
-            count = count + 1
-        } else if let ptD = delta where ptD.x * dx + ptD.y * dy < 0 {
+        } else if !fEdge && delta.x * dx + delta.y * dy < 0 {
             // Detected a "turning back". Add a quard segment, and turn on the fEdge flag.
+            //print("Turning Back", elements.count)
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
             pathToReturn = path
-            anchor = pt
-            delta = nil
+            anchor = last
             fEdge = true
             length = 0.0
-            count = count + 1
         } else {
             // Neigher. Return the path with a line to the current point as a transient path.
             let pathTemp = CGPathCreateMutableCopy(path)
             CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
             pathToReturn = pathTemp
             delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
+            fEdge = false
         }
         last = pt
         
@@ -78,8 +74,6 @@ public struct SNPathBuilder {
     }
     
     public mutating func end() -> CGPath {
-        //print("End", count)
-        // NOTE: We intentionally ignore the last point to reduce the noise.
         CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
         elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: last.x, y: last.y))
         return path

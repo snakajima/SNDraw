@@ -43,17 +43,19 @@ extension ViewController : SNDrawViewDelegate {
 
         let layerCurve = CAShapeLayer()
         layerCurve.path = SNPath.pathFrom(elements)
-        layerCurve.lineWidth = 1
+        layerCurve.lineWidth = 10
         layerCurve.fillColor = UIColor.clearColor().CGColor
-        layerCurve.strokeColor = UIColor.greenColor().CGColor
+        layerCurve.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
+        layerCurve.lineCap = "round"
+        layerCurve.lineJoin = "round"
         self.view.layer.addSublayer(layerCurve)
         layers.append(layerCurve)
 
         let layerLine = CAShapeLayer()
         layerLine.path = SNPath.polyPathFrom(elements)
-        layerLine.lineWidth = 1
+        layerLine.lineWidth = 2
         layerLine.fillColor = UIColor.clearColor().CGColor
-        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.2).CGColor
+        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.5, alpha: 1.0).CGColor
         self.view.layer.addSublayer(layerLine)
         layers.append(layerLine)
         
