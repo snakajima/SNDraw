@@ -42,7 +42,7 @@ public struct SNPathBuilder {
         if length > minSegment {
             // Detected enough movement. Add a quad segment, if we are not at the edge.
             if !fEdge {
-                let ptMid = CGPointMake((anchor.x + pt.x) / 2.0, (anchor.y + pt.y) / 2.0)
+                let ptMid = anchor.middle(pt)
                 CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
                 elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
                 pathToReturn = path
@@ -54,14 +54,7 @@ public struct SNPathBuilder {
         } else if !fEdge && delta.x * dx + delta.y * dy < 0 {
             // Detected a "turning back". Add a quard segment, and turn on the fEdge flag.
             //print("Turning Back", elements.count)
-            if let quad = elements.last as? SNQuadCurve {
-                elements.removeLast()
-                CGPathAddLineToPoint(path, nil, last.x, last.y) // HACK: Not accurate
-                elements.append(SNQuadCurve(cp: quad.cp, pt: last))
-            } else {
-                CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
-                elements.append(SNQuadCurve(cp: anchor, pt: last))
-            }
+            processLast()
             pathToReturn = path
             anchor = last
             fEdge = true
@@ -78,8 +71,7 @@ public struct SNPathBuilder {
         return pathToReturn
     }
     
-    public mutating func end() -> CGPath {
-        // LATER: Identical code in move
+    private mutating func processLast() {
         if let quad = elements.last as? SNQuadCurve {
             elements.removeLast()
             CGPathAddLineToPoint(path, nil, last.x, last.y) // HACK: Not accurate
@@ -88,6 +80,10 @@ public struct SNPathBuilder {
             CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
             elements.append(SNQuadCurve(cp: anchor, pt: last))
         }
+    }
+    
+    public mutating func end() -> CGPath {
+        processLast()
         return path
     }
 }

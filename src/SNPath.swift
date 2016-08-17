@@ -20,6 +20,18 @@ extension CGPath {
     }
 }
 
+extension CGPoint {
+    func middle(pt:CGPoint) -> CGPoint {
+        return CGPointMake((self.x + pt.x)/2, (self.y + pt.y)/2)
+    }
+    
+    func distance2(pt:CGPoint) -> CGFloat {
+        let (dx, dy) = (self.x - pt.x, self.y - pt.y)
+        return dx * dx + dy * dy
+    }
+}
+
+
 public struct SNPath {
     static func pathFrom(elements:[SNPathElement]) -> CGPath {
         return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
