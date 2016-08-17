@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         drawView?.delegate = self
-        drawView?.shapeLayer.lineWidth = 5.0
+        drawView?.shapeLayer.lineWidth = 12.0
     }
 
     override func didReceiveMemoryWarning() {
@@ -50,9 +50,9 @@ extension ViewController : SNDrawViewDelegate {
         let es2 = SNPath.elementsFrom(path)
         
         layerCurve.path = SNPath.pathFrom(es2)
-        layerCurve.lineWidth = 10
+        layerCurve.lineWidth = 12
         layerCurve.fillColor = UIColor.clearColor().CGColor
-        layerCurve.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
+        layerCurve.strokeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.4).CGColor
         layerCurve.lineCap = "round"
         layerCurve.lineJoin = "round"
         self.view.layer.addSublayer(layerCurve)
@@ -62,7 +62,7 @@ extension ViewController : SNDrawViewDelegate {
         layerLine.path = SNPath.polyPathFrom(elements)
         layerLine.lineWidth = 2
         layerLine.fillColor = UIColor.clearColor().CGColor
-        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.5, alpha: 1.0).CGColor
+        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.8, alpha: 0.1).CGColor
         self.view.layer.addSublayer(layerLine)
         layers.append(layerLine)
         
