@@ -29,9 +29,13 @@ extension CGPoint {
         return CGPointMake(self.x - from.x, self.y - from.y)
     }
     
+    func dotProduct(with:CGPoint) -> CGFloat {
+        return self.x * with.x + self.y * with.y
+    }
+    
     func distance2(from:CGPoint) -> CGFloat {
-        let d = self.delta(from)
-        return d.x * d.x + d.y * d.y
+        let delta = self.delta(from)
+        return delta.dotProduct(delta)
     }
     
     func distance(from:CGPoint) -> CGFloat {
@@ -41,13 +45,13 @@ extension CGPoint {
 
 
 public struct SNPath {
-    static func pathFrom(elements:[SNPathElement]) -> CGPath {
+    static func pathFrom(elements:[SNPathElement]) -> CGMutablePath {
         return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
             return element.addToPath(path)
         }
     }
     
-    static func polyPathFrom(elements:[SNPathElement]) -> CGPath {
+    static func polyPathFrom(elements:[SNPathElement]) -> CGMutablePath {
         return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
             return element.addToPathAsPolygon(path)
         }
