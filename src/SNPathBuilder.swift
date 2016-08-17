@@ -56,7 +56,7 @@ public struct SNPathBuilder {
             //print("Turning Back", elements.count)
             processLast()
             pathToReturn = path
-            anchor = last
+            anchor = last // matter for delta in "Neither" case (does not matter for QuadCurve, see above)
             fEdge = true
             length = 0.0
         } else {
@@ -72,7 +72,7 @@ public struct SNPathBuilder {
     }
     
     private mutating func processLast() {
-        if let quad = elements.last as? SNQuadCurve {
+        if !fEdge, let quad = elements.last as? SNQuadCurve {
             elements.removeLast()
             CGPathAddLineToPoint(path, nil, last.x, last.y) // HACK: Not accurate
             elements.append(SNQuadCurve(cp: quad.cp, pt: last))
