@@ -46,7 +46,7 @@ This function returns the SVG representation of the element. The *prev* specifie
 
 ## struct SNCloseSubpath, SNMove, SNLine, SNQuadCurve, SNBezierCurve
 
-Those structs are concrete structs of SNPathElement protocol, representing close-subpath, move, line, quadratic curve, and bezier curve element respectively.
+Those structs are concrete structs of SNPathElement protocol, representing close-subp, move, line, quadratic curve, and bezier curve element respectively.
 
 ## struct SNPathBuilder
 

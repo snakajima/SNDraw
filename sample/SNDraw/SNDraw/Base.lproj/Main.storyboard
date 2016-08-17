@@ -25,9 +25,10 @@
                                             <action selector="clear" destination="BYZ-38-t0r" id="zCt-oV-wrn"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="BgL-Vf-oqh"/>
                                     <barButtonItem style="plain" id="X8S-u4-dK9">
                                         <slider key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="25" minValue="3" maxValue="50" id="Yx5-eF-Tnr">
-                                            <rect key="frame" x="59" y="6.5" width="194" height="31"/>
+                                            <rect key="frame" x="112" y="6.5" width="194" height="31"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <connections>
                                                 <action selector="slide:" destination="BYZ-38-t0r" eventType="valueChanged" id="acA-0N-rxk"/>
