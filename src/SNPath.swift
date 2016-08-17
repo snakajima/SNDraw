@@ -21,13 +21,21 @@ extension CGPath {
 }
 
 extension CGPoint {
-    func middle(pt:CGPoint) -> CGPoint {
-        return CGPointMake((self.x + pt.x)/2, (self.y + pt.y)/2)
+    func middle(from:CGPoint) -> CGPoint {
+        return CGPointMake((self.x + from.x)/2, (self.y + from.y)/2)
+    }
+
+    func delta(from:CGPoint) -> CGPoint {
+        return CGPointMake(self.x - from.x, self.y - from.y)
     }
     
-    func distance2(pt:CGPoint) -> CGFloat {
-        let (dx, dy) = (self.x - pt.x, self.y - pt.y)
-        return dx * dx + dy * dy
+    func distance2(from:CGPoint) -> CGFloat {
+        let d = self.delta(from)
+        return d.x * d.x + d.y * d.y
+    }
+    
+    func distance(from:CGPoint) -> CGFloat {
+        return sqrt(self.distance2(from))
     }
 }
 

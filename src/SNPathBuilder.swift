@@ -37,8 +37,8 @@ public struct SNPathBuilder {
 
     public mutating func move(pt:CGPoint) -> CGPath? {
         var pathToReturn:CGPath?
-        let (dx, dy) = (pt.x - last.x, pt.y - last.y)
-        length += sqrt(dx * dx + dy * dy)
+        let d = pt.delta(last)
+        length += sqrt(d.x * d.x + d.y * d.y)
         if length > minSegment {
             // Detected enough movement. Add a quad segment, if we are not at the edge.
             if !fEdge {
@@ -47,13 +47,12 @@ public struct SNPathBuilder {
                 elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
                 pathToReturn = path
             }
-            delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
+            delta = pt.delta(anchor)
             anchor = pt
             fEdge = false
             length = 0.0
-        } else if !fEdge && delta.x * dx + delta.y * dy < 0 {
+        } else if !fEdge && delta.x * d.x + delta.y * d.y < 0 {
             // Detected a "turning back". Add a quard segment, and turn on the fEdge flag.
-            //print("Turning Back", elements.count)
             processLast()
             pathToReturn = path
             anchor = last // matter for delta in "Neither" case (does not matter for QuadCurve, see above)
@@ -64,7 +63,7 @@ public struct SNPathBuilder {
             let pathTemp = CGPathCreateMutableCopy(path)
             CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
             pathToReturn = pathTemp
-            delta = CGPointMake(pt.x - anchor.x, pt.y - anchor.y)
+            delta = pt.delta(anchor)
         }
         last = pt
         
