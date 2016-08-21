@@ -22,11 +22,11 @@ extension CGPath {
 
 extension CGPoint {
     func middle(from:CGPoint) -> CGPoint {
-        return CGPointMake((self.x + from.x)/2, (self.y + from.y)/2)
+        return CGPoint(x: (self.x + from.x)/2, y: (self.y + from.y)/2)
     }
 
     func delta(from:CGPoint) -> CGPoint {
-        return CGPointMake(self.x - from.x, self.y - from.y)
+        return CGPoint(x: self.x - from.x, y: self.y - from.y)
     }
     
     func dotProduct(with:CGPoint) -> CGFloat {
@@ -40,6 +40,10 @@ extension CGPoint {
     
     func distance(from:CGPoint) -> CGFloat {
         return sqrt(self.distance2(from))
+    }
+
+    func translate(x:CGFloat, y:CGFloat) -> CGPoint {
+        return CGPoint(x: self.x + x, y: self.y + y)
     }
 }
 
