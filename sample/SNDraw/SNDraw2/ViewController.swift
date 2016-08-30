@@ -17,8 +17,8 @@ enum DrawStatus: Int {
 }
 
 class ViewController: UIViewController {
-    private var index = 0
-    private var status = DrawStatus.none {
+    fileprivate var index = 0
+    fileprivate var status = DrawStatus.none {
         didSet {
             switch(oldValue) {
             default:
@@ -38,7 +38,7 @@ class ViewController: UIViewController {
                 layers[index].backgroundColor = normalColor
             case .drawing:
                 self.view.layer.backgroundColor = normalColor
-                for (i, layer) in layers.enumerate() {
+                for (i, layer) in layers.enumerated() {
                     layer.backgroundColor = (i == index) ? validColor : normalColor
                 }
             case .done:
@@ -47,12 +47,12 @@ class ViewController: UIViewController {
             }
         }
     }
-    private let layers = [CALayer(), CALayer(), CALayer(), CALayer(), CALayer()]
-    private let normalColor = UIColor.whiteColor().CGColor
-    private let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).CGColor
-    private let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).CGColor
-    private let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).CGColor
-    private var radius = 100.0 as CGFloat
+    fileprivate let layers = [CALayer(), CALayer(), CALayer(), CALayer(), CALayer()]
+    fileprivate let normalColor = UIColor.white.cgColor
+    fileprivate let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).cgColor
+    fileprivate let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).cgColor
+    fileprivate let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).cgColor
+    fileprivate var radius = 100.0 as CGFloat
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,8 +67,8 @@ class ViewController: UIViewController {
         let size = self.view.frame.size
         radius = size.width / 10
         let r2 = radius * 2
-        for (i, layer) in layers.enumerate() {
-            layer.frame = CGRectMake(CGFloat(i) * r2, size.height - r2, r2, r2)
+        for (i, layer) in layers.enumerated() {
+            layer.frame = CGRect(x: CGFloat(i) * r2, y: size.height - r2, width: r2, height: r2)
             layer.cornerRadius = radius
         }
     }
@@ -81,21 +81,21 @@ class ViewController: UIViewController {
     var builder = SNPathBuilder(minSegment: 25.0)
     lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
-        shapeLayer.contentsScale = UIScreen.mainScreen().scale
+        shapeLayer.contentsScale = UIScreen.main.scale
         shapeLayer.lineWidth = 10.0
-        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
+        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).cgColor
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
-        shapeLayer.fillColor = UIColor.clearColor().CGColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
         self.view.layer.addSublayer(shapeLayer)
         return shapeLayer
     }()
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            let pt = touch.locationInView(self.view)
+            let pt = touch.location(in: self.view)
             var newStatus = DrawStatus.invalid
-            for (i, layer) in layers.enumerate() {
+            for (i, layer) in layers.enumerated() {
                 if inRange(layer, pt: pt) {
                     index = i
                     newStatus = .started
@@ -106,15 +106,15 @@ class ViewController: UIViewController {
         }
     }
     
-    func inRange(layer:CALayer, pt:CGPoint) -> Bool {
+    func inRange(_ layer:CALayer, pt:CGPoint) -> Bool {
         let pos = layer.position
         let (dx, dy) = (pos.x - pt.x, pos.y - pt.y)
         return dx * dx + dy * dy < radius * radius
     }
     
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            let pt = touch.locationInView(self.view)
+            let pt = touch.location(in: self.view)
             switch(status) {
             case .started:
                 if let path = builder.move(pt) {
@@ -136,7 +136,7 @@ class ViewController: UIViewController {
         }
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let _ = touches.first {
             shapeLayer.path = builder.end()
         }
@@ -152,8 +152,8 @@ class ViewController: UIViewController {
             } else if index > 2 {
                 offset += 1
             }
-            let pt = CGPointMake(CGFloat(offset) * radius, self.view.frame.size.height)
-            elements.insert(SNMove(x: pt.x, y: pt.y), atIndex: 0)
+            let pt = CGPoint(x: CGFloat(offset) * radius, y: self.view.frame.size.height)
+            elements.insert(SNMove(x: pt.x, y: pt.y), at: 0)
             elements.append(SNLine(x: pt.x, y: pt.y))
             shapeLayer.path = SNPath.pathFrom(elements)
             break
@@ -163,7 +163,7 @@ class ViewController: UIViewController {
         status = .none
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("touchesCancelled")
         shapeLayer.path = nil
         status = .none

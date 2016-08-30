@@ -10,23 +10,23 @@ import UIKit
 
 public struct SNPathBuilder {
     public var minSegment:CGFloat
-    public private(set) var elements:[SNPathElement]
+    public fileprivate(set) var elements:[SNPathElement]
     
-    private var path = CGPathCreateMutable()
-    private var length = 0 as CGFloat
-    private var anchor = CGPoint.zero // last anchor point
-    private var last = CGPoint.zero // last touch point
-    private var delta = CGPoint.zero // last movement to compare against to detect a sharp turn
-    private var fEdge = true //either the begging or the turning point
+    fileprivate var path = CGMutablePath()
+    fileprivate var length = 0 as CGFloat
+    fileprivate var anchor = CGPoint.zero // last anchor point
+    fileprivate var last = CGPoint.zero // last touch point
+    fileprivate var delta = CGPoint.zero // last movement to compare against to detect a sharp turn
+    fileprivate var fEdge = true //either the begging or the turning point
 
     init(minSegment:CGFloat) {
         self.elements = [SNPathElement]()
         self.minSegment = minSegment
     }
     
-    public mutating func start(pt:CGPoint) -> CGPath {
-        path = CGPathCreateMutable()
-        CGPathMoveToPoint(path, nil, pt.x, pt.y)
+    public mutating func start(_ pt:CGPoint) -> CGPath {
+        path = CGMutablePath()
+        path.move(to: pt)
         elements = [SNMove(x: pt.x, y: pt.y)]
         anchor = pt
         last = pt
@@ -35,7 +35,7 @@ public struct SNPathBuilder {
         return path
     }
 
-    public mutating func move(pt:CGPoint) -> CGPath? {
+    public mutating func move(_ pt:CGPoint) -> CGPath? {
         var pathToReturn:CGPath?
         let d = pt.delta(last)
         length += sqrt(d.dotProduct(d))
@@ -43,7 +43,7 @@ public struct SNPathBuilder {
             // Detected enough movement. Add a quad segment, if we are not at the edge.
             if !fEdge {
                 let ptMid = anchor.middle(pt)
-                CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, ptMid.x, ptMid.y)
+                path.addQuadCurve(to: pt, control: anchor)
                 elements.append(SNQuadCurve(cpx: anchor.x, cpy: anchor.y, x: ptMid.x, y: ptMid.y))
                 pathToReturn = path
             }
@@ -60,8 +60,8 @@ public struct SNPathBuilder {
             length = 0.0
         } else {
             // Neigher. Return the path with a line to the current point as a transient path.
-            let pathTemp = CGPathCreateMutableCopy(path)
-            CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
+            let pathTemp = path.mutableCopy()
+            pathTemp?.addLine(to: pt)
             pathToReturn = pathTemp
             delta = pt.delta(anchor)
         }
@@ -70,13 +70,13 @@ public struct SNPathBuilder {
         return pathToReturn
     }
     
-    private mutating func processLast() {
+    fileprivate mutating func processLast() {
         if !fEdge, let quad = elements.last as? SNQuadCurve {
             elements.removeLast()
             elements.append(SNQuadCurve(cp: quad.cp, pt: last))
             path = SNPath.pathFrom(elements)
         } else {
-            CGPathAddQuadCurveToPoint(path, nil, anchor.x, anchor.y, last.x, last.y)
+            path.addQuadCurve(to: last, control: anchor)
             elements.append(SNQuadCurve(cp: anchor, pt: last))
         }
     }
