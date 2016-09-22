@@ -60,10 +60,13 @@ public struct SNPathBuilder {
             length = 0.0
         } else {
             // Neigher. Return the path with a line to the current point as a transient path.
-            let pathTemp = CGPathCreateMutableCopy(path)
-            CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
-            pathToReturn = pathTemp
-            delta = pt.delta(anchor)
+            if let pathTemp = CGPathCreateMutableCopy(path) {
+                CGPathAddLineToPoint(pathTemp, nil, pt.x, pt.y)
+                pathToReturn = pathTemp
+                delta = pt.delta(anchor)
+            } else {
+                assertionFailure("SNPathBuilder: CGPathCreateMutableCopy should not fail.")
+            }
         }
         last = pt
         
