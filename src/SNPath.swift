@@ -245,12 +245,17 @@ public protocol SNPathElement {
     func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
     func svgString(prev:SNPathElement?) -> String
     func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement
+    func roundedElement(precision p:CGFloat) -> SNPathElement
 }
 
 extension SNPathElement {
     public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
         return addToPath(path)
     }
+}
+
+private func rounded(value:CGFloat, p precision:CGFloat) -> CGFloat {
+    return round(value / precision) * precision
 }
 
 public struct SNCloseSubpath:SNPathElement {
@@ -262,6 +267,9 @@ public struct SNCloseSubpath:SNPathElement {
         return "Z"
     }
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
+        return self
+    }
+    public func roundedElement(precision p:CGFloat) -> SNPathElement {
         return self
     }
 }
@@ -287,6 +295,10 @@ public struct SNMove:SNPathElement {
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNMove(x: pt.x + x, y: pt.y + y)
     }
+
+    public func roundedElement(precision p:CGFloat) -> SNPathElement {
+        return SNMove(x: rounded(pt.x, p:p), y: rounded(pt.y, p:p))
+    }
 }
 
 public struct SNLine:SNPathElement {
@@ -310,6 +322,10 @@ public struct SNLine:SNPathElement {
 
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNLine(x: pt.x + x, y: pt.y + y)
+    }
+
+    public func roundedElement(precision p:CGFloat) -> SNPathElement {
+        return SNLine(x: rounded(pt.x, p:p), y: rounded(pt.y, p:p))
     }
 }
 
@@ -343,6 +359,10 @@ public struct SNQuadCurve:SNPathElement {
 
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNQuadCurve(cpx: cp.x + x, cpy: cp.y + y, x: pt.x + x, y: pt.y + y)
+    }
+    
+    public func roundedElement(precision p:CGFloat) -> SNPathElement {
+        return SNQuadCurve(cpx: rounded(cp.x, p:p), cpy: rounded(cp.y, p:p), x: rounded(pt.x, p:p), y: rounded(pt.y, p:p))
     }
 }
 
@@ -380,6 +400,12 @@ public struct SNBezierCurve:SNPathElement {
 
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNBezierCurve(cp1x: cp1.x + x, cp1y: cp1.y + y, cp2x: cp2.x + x, cp2y: cp2.y + y, x: pt.x + x, y: pt.y + y)
+    }
+
+    public func roundedElement(precision p:CGFloat) -> SNPathElement {
+        return SNBezierCurve(cp1x: rounded(cp1.x, p:p), cp1y: rounded(cp1.y, p:p),
+                             cp2x: rounded(cp2.x, p:p), cp2y: rounded(cp2.y, p:p),
+                             x: rounded(pt.x, p:p), y: rounded(pt.y, p:p))
     }
 }
 
