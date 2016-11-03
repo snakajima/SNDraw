@@ -17,8 +17,8 @@ enum DrawStatus: Int {
 }
 
 class ViewController: UIViewController {
-    fileprivate var index = 0
-    fileprivate var status = DrawStatus.none {
+    private var index = 0
+    private var status = DrawStatus.none {
         didSet {
             switch(oldValue) {
             default:
@@ -47,12 +47,12 @@ class ViewController: UIViewController {
             }
         }
     }
-    fileprivate let layers = [CALayer(), CALayer(), CALayer(), CALayer(), CALayer()]
-    fileprivate let normalColor = UIColor.white.cgColor
-    fileprivate let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).cgColor
-    fileprivate let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).cgColor
-    fileprivate let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).cgColor
-    fileprivate var radius = 100.0 as CGFloat
+    private let layers = [CALayer(), CALayer(), CALayer(), CALayer(), CALayer()]
+    private let normalColor = UIColor.white.cgColor
+    private let invalidColor = UIColor(red: 1, green: 0.8, blue: 0.8, alpha: 1.0).cgColor
+    private let validColor = UIColor(red: 0.8, green: 1, blue: 0.8, alpha: 1.0).cgColor
+    private let activeColor = UIColor(red: 0.5, green: 1, blue: 0.5, alpha: 1.0).cgColor
+    private var radius = 100.0 as CGFloat
 
     override func viewDidLoad() {
         super.viewDidLoad()
