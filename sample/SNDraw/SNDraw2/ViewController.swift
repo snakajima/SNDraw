@@ -155,7 +155,7 @@ class ViewController: UIViewController {
             let pt = CGPoint(x: CGFloat(offset) * radius, y: self.view.frame.size.height)
             elements.insert(SNMove(x: pt.x, y: pt.y), at: 0)
             elements.append(SNLine(x: pt.x, y: pt.y))
-            shapeLayer.path = SNPath.pathFrom(elements)
+            shapeLayer.path = SNPath.path(from: elements)
             break
         default:
             shapeLayer.path = nil

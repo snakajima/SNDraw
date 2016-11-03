@@ -42,26 +42,26 @@ extension CGPoint {
         return sqrt(self.distance2(from))
     }
 
-    func translate(_ x:CGFloat, y:CGFloat) -> CGPoint {
+    func translate(x:CGFloat, y:CGFloat) -> CGPoint {
         return CGPoint(x: self.x + x, y: self.y + y)
     }
 }
 
 
 public struct SNPath {
-    static func pathFrom(_ elements:[SNPathElement]) -> CGMutablePath {
+    static func path(from elements:[SNPathElement]) -> CGMutablePath {
         return elements.reduce(CGMutablePath()) { (path, element) -> CGMutablePath in
-            return element.addToPath(path)
+            return element.add(to: path)
         }
     }
     
-    static func polyPathFrom(_ elements:[SNPathElement]) -> CGMutablePath {
+    static func polyPath(from elements:[SNPathElement]) -> CGMutablePath {
         return elements.reduce(CGMutablePath()) { (path, element) -> CGMutablePath in
-            return element.addToPathAsPolygon(path)
+            return element.addAsPolygon(to: path)
         }
     }
     
-    static func svgFrom(_ elements:[SNPathElement]) -> String {
+    static func svg(from elements:[SNPathElement]) -> String {
         var prev:SNPathElement? = nil
         return elements.reduce("") { (svn, element) -> String in
             defer { prev = element }
@@ -69,7 +69,7 @@ public struct SNPath {
         }
     }
 
-    static func elementsFrom(_ path:CGPath) -> [SNPathElement] {
+    static func elements(from path:CGPath) -> [SNPathElement] {
         var elements = [SNPathElement]()
         path.forEach { e in
             switch(e.type) {
@@ -90,7 +90,7 @@ public struct SNPath {
     
     static let regexSVG = try! NSRegularExpression(pattern: "[a-z][0-9\\-\\.,\\s]*", options: NSRegularExpression.Options.caseInsensitive)
     static let regexNUM = try! NSRegularExpression(pattern: "[\\-]*[0-9\\.]+", options: NSRegularExpression.Options())
-    static func elementsFrom(_ svg:String) -> [SNPathElement] {
+    static func elements(from svg:String) -> [SNPathElement] {
         var elements = [SNPathElement]()
         var pt = CGPoint.zero
         var cp = CGPoint.zero // last control point for S command
@@ -241,16 +241,16 @@ public struct SNPath {
 }
 
 public protocol SNPathElement {
-    func addToPath(_ path:CGMutablePath) -> CGMutablePath
-    func addToPathAsPolygon(_ path:CGMutablePath) -> CGMutablePath
+    func add(to path:CGMutablePath) -> CGMutablePath
+    func addAsPolygon(to path:CGMutablePath) -> CGMutablePath
     func svgString(_ prev:SNPathElement?) -> String
-    func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement
+    func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement
     func roundedElement(precision p:CGFloat) -> SNPathElement
 }
 
 extension SNPathElement {
-    public func addToPathAsPolygon(_ path:CGMutablePath) -> CGMutablePath {
-        return addToPath(path)
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
+        return add(to: path)
     }
 }
 
@@ -259,14 +259,14 @@ fileprivate func rounded(_ value:CGFloat, p precision:CGFloat) -> CGFloat {
 }
 
 public struct SNCloseSubpath:SNPathElement {
-    public func addToPath(_ path:CGMutablePath) -> CGMutablePath {
+    public func add(to path:CGMutablePath) -> CGMutablePath {
         path.closeSubpath()
         return path
     }
     public func svgString(_ prev:SNPathElement?) -> String {
         return "Z"
     }
-    public func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement {
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return self
     }
     public func roundedElement(precision p:CGFloat) -> SNPathElement {
@@ -283,7 +283,7 @@ public struct SNMove:SNPathElement {
         self.pt = pt
     }
     
-    public func addToPath(_ path:CGMutablePath) -> CGMutablePath {
+    public func add(to path:CGMutablePath) -> CGMutablePath {
         path.move(to: pt)
         return path
     }
@@ -292,7 +292,7 @@ public struct SNMove:SNPathElement {
         return "M\(pt.x),\(pt.y)"
     }
 
-    public func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement {
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNMove(x: pt.x + x, y: pt.y + y)
     }
 
@@ -310,7 +310,7 @@ public struct SNLine:SNPathElement {
         self.pt = pt
     }
 
-    public func addToPath(_ path:CGMutablePath) -> CGMutablePath {
+    public func add(to path:CGMutablePath) -> CGMutablePath {
         path.addLine(to: pt)
         return path
     }
@@ -320,7 +320,7 @@ public struct SNLine:SNPathElement {
         return "\(prefix)\(pt.x),\(pt.y)"
     }
 
-    public func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement {
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNLine(x: pt.x + x, y: pt.y + y)
     }
 
@@ -341,12 +341,12 @@ public struct SNQuadCurve:SNPathElement {
         self.pt = pt
     }
 
-    public func addToPath(_ path:CGMutablePath) -> CGMutablePath {
+    public func add(to path:CGMutablePath) -> CGMutablePath {
         path.addQuadCurve(to: pt, control: cp)
         return path
     }
 
-    public func addToPathAsPolygon(_ path:CGMutablePath) -> CGMutablePath {
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
         path.addLine(to: cp)
         path.addLine(to: pt)
         return path
@@ -357,7 +357,7 @@ public struct SNQuadCurve:SNPathElement {
         return "\(prefix)\(cp.x),\(cp.y),\(pt.x),\(pt.y)"
     }
 
-    public func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement {
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNQuadCurve(cpx: cp.x + x, cpy: cp.y + y, x: pt.x + x, y: pt.y + y)
     }
     
@@ -381,12 +381,12 @@ public struct SNBezierCurve:SNPathElement {
         self.pt = pt
     }
 
-    public func addToPath(_ path:CGMutablePath) -> CGMutablePath {
+    public func add(to path:CGMutablePath) -> CGMutablePath {
         path.addCurve(to: pt, control1: cp1, control2: cp2)
         return path
     }
 
-    public func addToPathAsPolygon(_ path:CGMutablePath) -> CGMutablePath {
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
         path.addLine(to: cp1)
         path.addLine(to: cp2)
         path.addLine(to: pt)
@@ -398,7 +398,7 @@ public struct SNBezierCurve:SNPathElement {
         return "\(prefix)\(cp1.x),\(cp1.y),\(cp2.x),\(cp2.y)\(pt.x),\(pt.y)"
     }
 
-    public func translatedElement(_ x:CGFloat, y:CGFloat) -> SNPathElement {
+    public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
         return SNBezierCurve(cp1x: cp1.x + x, cp1y: cp1.y + y, cp2x: cp2.x + x, cp2y: cp2.y + y, x: pt.x + x, y: pt.y + y)
     }
 

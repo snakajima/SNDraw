@@ -10,14 +10,14 @@ import UIKit
 
 public struct SNPathBuilder {
     public var minSegment:CGFloat
-    public fileprivate(set) var elements:[SNPathElement]
+    public private(set) var elements:[SNPathElement]
     
-    fileprivate var path = CGMutablePath()
-    fileprivate var length = 0 as CGFloat
-    fileprivate var anchor = CGPoint.zero // last anchor point
-    fileprivate var last = CGPoint.zero // last touch point
-    fileprivate var delta = CGPoint.zero // last movement to compare against to detect a sharp turn
-    fileprivate var fEdge = true //either the begging or the turning point
+    private var path = CGMutablePath()
+    private var length = 0 as CGFloat
+    private var anchor = CGPoint.zero // last anchor point
+    private var last = CGPoint.zero // last touch point
+    private var delta = CGPoint.zero // last movement to compare against to detect a sharp turn
+    private var fEdge = true //either the begging or the turning point
 
     init(minSegment:CGFloat) {
         self.elements = [SNPathElement]()
@@ -73,11 +73,11 @@ public struct SNPathBuilder {
         return pathToReturn
     }
     
-    fileprivate mutating func processLast() {
+    private mutating func processLast() {
         if !fEdge, let quad = elements.last as? SNQuadCurve {
             elements.removeLast()
             elements.append(SNQuadCurve(cp: quad.cp, pt: last))
-            path = SNPath.pathFrom(elements)
+            path = SNPath.path(from: elements)
         } else {
             path.addQuadCurve(to: last, control: anchor)
             elements.append(SNQuadCurve(cp: anchor, pt: last))

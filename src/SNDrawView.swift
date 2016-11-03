@@ -14,9 +14,9 @@ public protocol SNDrawViewDelegate:NSObjectProtocol {
 }
 
 open class SNDrawView: UIView {
-    open var builder = SNPathBuilder(minSegment: 25.0)
-    weak open var delegate:SNDrawViewDelegate?
-    open lazy var shapeLayer:CAShapeLayer = {
+    public var builder = SNPathBuilder(minSegment: 25.0)
+    weak public var delegate:SNDrawViewDelegate?
+    public lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.contentsScale = UIScreen.main.scale
         shapeLayer.lineWidth = 10.0
