@@ -254,7 +254,7 @@ extension SNPathElement {
     }
 }
 
-private func rounded(value:CGFloat, p precision:CGFloat) -> CGFloat {
+fileprivate func rounded(_ value:CGFloat, p precision:CGFloat) -> CGFloat {
     return round(value / precision) * precision
 }
 
