@@ -7,19 +7,19 @@ SNDraw is a lightweigt library for iOS, which turns a series of touch events int
 *SNPath* is an abstruct struct, which offers static functions to convert between a series of path elements (represented in an array of *SNPathElement*) and a CGPath or a SVG path.
 
 ```
-static func pathFrom(elements:[SNPathElement]) -> CGPath
-static func elementsFrom(path:CGPath) -> [SNPathElement]
+static func path(from elements:[SNPathElement]) -> CGPath
+static func elements(from path:CGPath) -> [SNPathElement]
 ```
 These functions performs the conversion between a series of path elements and a CGPath 
 
 ```
-static func polyPathFrom(elements:[SNPathElement]) -> CGPath
+static func polyPath(from elements:[SNPathElement]) -> CGPath
 ```
 This function converts a series of path elements into a CGPath, by turning curves into polylines by drawing lines between control points and anchor points. 
 
 ```
-static func svgFrom(elements:[SNPathElement]) -> String
-static func elementsFrom(svg:String) -> [SNPathElement]
+static func svg(from elements:[SNPathElement]) -> String
+static func elements(from svg:String) -> [SNPathElement]
 ```
 These functions perform the conversion between a series of path elements and a SVG path (excluding "arc" commands). 
 
@@ -28,18 +28,18 @@ These functions perform the conversion between a series of path elements and a S
 *SNPathElement* is a protocol, which represents a path element. It has two methods to be implemented by the concrete structs. 
 
 ```
-func addToPath(path:CGMutablePath) -> CGMutablePath
+func add(to path:CGMutablePath) -> CGMutablePath
 ```
 
 This functions add the element to CGMutablePath. 
 
 ```
-func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
+func addAsPolygon(to path:CGMutablePath) -> CGMutablePath
 ```
 This functions add the element to CGMutablePath, by turning curves into polylines by drawing lines between control points and anchor points. 
 
 ```
-public func svgString(prev:SNPathElement?) -> String
+public func svgString(_ prev:SNPathElement?) -> String
 ```
 This function returns the SVG representation of the element. The *prev* specifies the previous path element in the sequence for optimization. 
 
@@ -74,12 +74,12 @@ init(minSegment:CGFloat)
 The minSegment parameter of this constructor specifies the minimum segment length for smoothing. 
 
 ```
-public mutating func start(pt:CGPoint) -> CGPath
+public mutating func start(_ pt:CGPoint) -> CGPath
 ```
 It indicates the beginning of touch events. The user of this struct typically calls this method when the user touches the view (from the *touchesBegan* method). It removes all the existing elements in the *elements* and adds a SNMove element to it. 
 
 ```
-public mutating func move(pt:CGPoint) -> CGPath?
+public mutating func move(_ pt:CGPoint) -> CGPath?
 ```
 It indicates of a touch move event. The user of this struct typically calls this method when the user moves a finger on the view (from the *touchesMove* method). It may or may not add a SNQuadCurve element (depending on the smoothing). 
 
@@ -112,7 +112,7 @@ This is an instance of CAShapeLayer, which SNDrawView renders the path while pro
 ## protocol SNDrawViewDelegate
 
 ```
-func didComplete(elements:[SNPathElement]) -> Bool
+func didComplete(_ elements:[SNPathElement]) -> Bool
 ```
 SNDrawViewDelegate call this method when it receives touchesEnded message with the series of path elements. 
 
