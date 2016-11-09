@@ -9,36 +9,36 @@
 import UIKit
 
 extension CGPath {
-    func forEach(@noescape body: @convention(block) (CGPathElement) -> Void) {
+    func forEach(_ body: @convention(block) (CGPathElement) -> Void) {
         typealias Body = @convention(block) (CGPathElement) -> Void
-        func callback(info: UnsafeMutablePointer<Void>, element: UnsafePointer<CGPathElement>) {
-            let body = unsafeBitCast(info, Body.self)
-            body(element.memory)
+        func callback(_ info: UnsafeMutableRawPointer?, _ element: UnsafePointer<CGPathElement>) {
+            let body = unsafeBitCast(info, to: Body.self)
+            body(element.pointee)
         }
-        let unsafeBody = unsafeBitCast(body, UnsafeMutablePointer<Void>.self)
-        CGPathApply(self, unsafeBody, callback)
+        let unsafeBody = unsafeBitCast(body, to: UnsafeMutableRawPointer.self)
+        self.apply(info: unsafeBody, function: callback)
     }
 }
 
 extension CGPoint {
-    func middle(from:CGPoint) -> CGPoint {
+    func middle(_ from:CGPoint) -> CGPoint {
         return CGPoint(x: (self.x + from.x)/2, y: (self.y + from.y)/2)
     }
 
-    func delta(from:CGPoint) -> CGPoint {
+    func delta(_ from:CGPoint) -> CGPoint {
         return CGPoint(x: self.x - from.x, y: self.y - from.y)
     }
     
-    func dotProduct(with:CGPoint) -> CGFloat {
+    func dotProduct(_ with:CGPoint) -> CGFloat {
         return self.x * with.x + self.y * with.y
     }
     
-    func distance2(from:CGPoint) -> CGFloat {
+    func distance2(_ from:CGPoint) -> CGFloat {
         let delta = self.delta(from)
         return delta.dotProduct(delta)
     }
     
-    func distance(from:CGPoint) -> CGFloat {
+    func distance(_ from:CGPoint) -> CGFloat {
         return sqrt(self.distance2(from))
     }
 
@@ -49,19 +49,19 @@ extension CGPoint {
 
 
 public struct SNPath {
-    static func pathFrom(elements:[SNPathElement]) -> CGMutablePath {
-        return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
-            return element.addToPath(path)
+    static func path(from elements:[SNPathElement]) -> CGMutablePath {
+        return elements.reduce(CGMutablePath()) { (path, element) -> CGMutablePath in
+            return element.add(to: path)
         }
     }
     
-    static func polyPathFrom(elements:[SNPathElement]) -> CGMutablePath {
-        return elements.reduce(CGPathCreateMutable()) { (path, element) -> CGMutablePath in
-            return element.addToPathAsPolygon(path)
+    static func polyPath(from elements:[SNPathElement]) -> CGMutablePath {
+        return elements.reduce(CGMutablePath()) { (path, element) -> CGMutablePath in
+            return element.addAsPolygon(to: path)
         }
     }
     
-    static func svgFrom(elements:[SNPathElement]) -> String {
+    static func svg(from elements:[SNPathElement]) -> String {
         var prev:SNPathElement? = nil
         return elements.reduce("") { (svn, element) -> String in
             defer { prev = element }
@@ -69,47 +69,47 @@ public struct SNPath {
         }
     }
 
-    static func elementsFrom(path:CGPath) -> [SNPathElement] {
+    static func elements(from path:CGPath) -> [SNPathElement] {
         var elements = [SNPathElement]()
         path.forEach { e in
             switch(e.type) {
-            case .MoveToPoint:
+            case .moveToPoint:
                 elements.append(SNMove(pt: e.points[0]))
-            case .AddLineToPoint:
+            case .addLineToPoint:
                 elements.append(SNLine(pt: e.points[0]))
-            case .AddQuadCurveToPoint:
+            case .addQuadCurveToPoint:
                 elements.append(SNQuadCurve(cp: e.points[0], pt: e.points[1]))
-            case .AddCurveToPoint:
+            case .addCurveToPoint:
                 elements.append(SNBezierCurve(cp1: e.points[0], cp2: e.points[1], pt: e.points[2]))
-            case .CloseSubpath:
+            case .closeSubpath:
                 elements.append(SNCloseSubpath())
             }
         }
         return elements
     }
     
-    static let regexSVG = try! NSRegularExpression(pattern: "[a-z][0-9\\-\\.,\\s]*", options: NSRegularExpressionOptions.CaseInsensitive)
-    static let regexNUM = try! NSRegularExpression(pattern: "[\\-]*[0-9\\.]+", options: NSRegularExpressionOptions())
-    static func elementsFrom(svg:String) -> [SNPathElement] {
+    static let regexSVG = try! NSRegularExpression(pattern: "[a-z][0-9\\-\\.,\\s]*", options: NSRegularExpression.Options.caseInsensitive)
+    static let regexNUM = try! NSRegularExpression(pattern: "[\\-]*[0-9\\.]+", options: NSRegularExpression.Options())
+    static func elements(from svg:String) -> [SNPathElement] {
         var elements = [SNPathElement]()
-        var pt = CGPointZero
-        var cp = CGPointZero // last control point for S command
+        var pt = CGPoint.zero
+        var cp = CGPoint.zero // last control point for S command
         var prevIndex = svg.startIndex // for performance
         var prevOffset = 0
-        let matches = SNPath.regexSVG.matchesInString(svg, options: NSMatchingOptions(), range: NSMakeRange(0, svg.characters.count))
+        let matches = SNPath.regexSVG.matches(in: svg, options: NSRegularExpression.MatchingOptions(), range: NSMakeRange(0, svg.characters.count))
         matches.forEach { match in
-            var start = prevIndex.advancedBy(match.range.location - prevOffset)
-            let cmd = svg[start..<start.advancedBy(1)]
-            start = start.advancedBy(1)
-            let end = start.advancedBy(match.range.length-1)
+            var start = svg.index(prevIndex, offsetBy: match.range.location - prevOffset)
+            let cmd = svg[start..<svg.index(start, offsetBy: 1)]
+            start = svg.index(start, offsetBy: 1)
+            let end = svg.index(start, offsetBy: match.range.length-1)
             prevIndex = end
             prevOffset = match.range.location + match.range.length
             
             let params = svg[start..<end]
-            let nums = SNPath.regexNUM.matchesInString(params, options: [], range: NSMakeRange(0, params.characters.count))
+            let nums = SNPath.regexNUM.matches(in: params, options: [], range: NSMakeRange(0, params.characters.count))
             let p = nums.map({ (num) -> CGFloat in
-                let start = params.startIndex.advancedBy(num.range.location)
-                let end = start.advancedBy(num.range.length)
+                let start = params.characters.index(params.startIndex, offsetBy: num.range.location)
+                let end = svg.index(start, offsetBy: num.range.length)
                 return CGFloat((params[start..<end] as NSString).floatValue)
             })
             switch(cmd) {
@@ -241,29 +241,29 @@ public struct SNPath {
 }
 
 public protocol SNPathElement {
-    func addToPath(path:CGMutablePath) -> CGMutablePath
-    func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath
-    func svgString(prev:SNPathElement?) -> String
+    func add(to path:CGMutablePath) -> CGMutablePath
+    func addAsPolygon(to path:CGMutablePath) -> CGMutablePath
+    func svgString(_ prev:SNPathElement?) -> String
     func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement
     func roundedElement(precision p:CGFloat) -> SNPathElement
 }
 
 extension SNPathElement {
-    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
-        return addToPath(path)
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
+        return add(to: path)
     }
 }
 
-private func rounded(value:CGFloat, p precision:CGFloat) -> CGFloat {
+fileprivate func rounded(_ value:CGFloat, p precision:CGFloat) -> CGFloat {
     return round(value / precision) * precision
 }
 
 public struct SNCloseSubpath:SNPathElement {
-    public func addToPath(path:CGMutablePath) -> CGMutablePath {
-        CGPathCloseSubpath(path)
+    public func add(to path:CGMutablePath) -> CGMutablePath {
+        path.closeSubpath()
         return path
     }
-    public func svgString(prev:SNPathElement?) -> String {
+    public func svgString(_ prev:SNPathElement?) -> String {
         return "Z"
     }
     public func translatedElement(x:CGFloat, y:CGFloat) -> SNPathElement {
@@ -277,14 +277,14 @@ public struct SNCloseSubpath:SNPathElement {
 public struct SNMove:SNPathElement {
     let pt:CGPoint
     init(x:CGFloat, y:CGFloat) {
-        pt = CGPointMake(x,y)
+        pt = CGPoint(x: x,y: y)
     }
     init(pt:CGPoint) {
         self.pt = pt
     }
     
-    public func addToPath(path:CGMutablePath) -> CGMutablePath {
-        CGPathMoveToPoint(path, nil, pt.x, pt.y)
+    public func add(to path:CGMutablePath) -> CGMutablePath {
+        path.move(to: pt)
         return path
     }
     
@@ -304,18 +304,18 @@ public struct SNMove:SNPathElement {
 public struct SNLine:SNPathElement {
     let pt:CGPoint
     init(x:CGFloat, y:CGFloat) {
-        pt = CGPointMake(x,y)
+        pt = CGPoint(x: x,y: y)
     }
     init(pt:CGPoint) {
         self.pt = pt
     }
 
-    public func addToPath(path:CGMutablePath) -> CGMutablePath {
-        CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+    public func add(to path:CGMutablePath) -> CGMutablePath {
+        path.addLine(to: pt)
         return path
     }
 
-    public func svgString(prev:SNPathElement?) -> String {
+    public func svgString(_ prev:SNPathElement?) -> String {
         let prefix = prev is SNLine ? " " : "L"
         return "\(prefix)\(pt.x),\(pt.y)"
     }
@@ -333,26 +333,26 @@ public struct SNQuadCurve:SNPathElement {
     let cp:CGPoint
     let pt:CGPoint
     init(cpx: CGFloat, cpy: CGFloat, x: CGFloat, y: CGFloat) {
-        cp = CGPointMake(cpx, cpy)
-        pt = CGPointMake(x, y)
+        cp = CGPoint(x: cpx, y: cpy)
+        pt = CGPoint(x: x, y: y)
     }
     init(cp:CGPoint, pt:CGPoint) {
         self.cp = cp
         self.pt = pt
     }
 
-    public func addToPath(path:CGMutablePath) -> CGMutablePath {
-        CGPathAddQuadCurveToPoint(path, nil, cp.x, cp.y, pt.x, pt.y)
+    public func add(to path:CGMutablePath) -> CGMutablePath {
+        path.addQuadCurve(to: pt, control: cp)
         return path
     }
 
-    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
-        CGPathAddLineToPoint(path, nil, cp.x, cp.y)
-        CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
+        path.addLine(to: cp)
+        path.addLine(to: pt)
         return path
     }
 
-    public func svgString(prev:SNPathElement?) -> String {
+    public func svgString(_ prev:SNPathElement?) -> String {
         let prefix = prev is SNQuadCurve ? " " : "Q"
         return "\(prefix)\(cp.x),\(cp.y),\(pt.x),\(pt.y)"
     }
@@ -371,9 +371,9 @@ public struct SNBezierCurve:SNPathElement {
     let cp2:CGPoint
     let pt:CGPoint
     init(cp1x: CGFloat, cp1y: CGFloat, cp2x: CGFloat, cp2y: CGFloat,x: CGFloat, y: CGFloat) {
-        cp1 = CGPointMake(cp1x, cp1y)
-        cp2 = CGPointMake(cp2x, cp2y)
-        pt = CGPointMake(x, y)
+        cp1 = CGPoint(x: cp1x, y: cp1y)
+        cp2 = CGPoint(x: cp2x, y: cp2y)
+        pt = CGPoint(x: x, y: y)
     }
     init(cp1:CGPoint, cp2:CGPoint, pt:CGPoint) {
         self.cp1 = cp1
@@ -381,19 +381,19 @@ public struct SNBezierCurve:SNPathElement {
         self.pt = pt
     }
 
-    public func addToPath(path:CGMutablePath) -> CGMutablePath {
-        CGPathAddCurveToPoint(path, nil, cp1.x, cp1.y, cp2.x, cp2.y, pt.x, pt.y)
+    public func add(to path:CGMutablePath) -> CGMutablePath {
+        path.addCurve(to: pt, control1: cp1, control2: cp2)
         return path
     }
 
-    public func addToPathAsPolygon(path:CGMutablePath) -> CGMutablePath {
-        CGPathAddLineToPoint(path, nil, cp1.x, cp1.y)
-        CGPathAddLineToPoint(path, nil, cp2.x, cp2.y)
-        CGPathAddLineToPoint(path, nil, pt.x, pt.y)
+    public func addAsPolygon(to path:CGMutablePath) -> CGMutablePath {
+        path.addLine(to: cp1)
+        path.addLine(to: cp2)
+        path.addLine(to: pt)
         return path
     }
 
-    public func svgString(prev:SNPathElement?) -> String {
+    public func svgString(_ prev:SNPathElement?) -> String {
         let prefix = prev is SNBezierCurve ? " " : "C"
         return "\(prefix)\(cp1.x),\(cp1.y),\(cp2.x),\(cp2.y)\(pt.x),\(pt.y)"
     }

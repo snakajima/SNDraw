@@ -32,41 +32,41 @@ class ViewController: UIViewController {
         layers.removeAll()
     }
     
-    @IBAction func slide(slider:UISlider) {
+    @IBAction func slide(_ slider:UISlider) {
         drawView?.builder.minSegment = CGFloat(slider.value)
     }
 }
 
 extension ViewController : SNDrawViewDelegate {
-    func didComplete(elements:[SNPathElement]) -> Bool {
+    func didComplete(_ elements:[SNPathElement]) -> Bool {
         print("complete", elements.count)
 
         let layerCurve = CAShapeLayer()
         
         // Extra round-trips to SVG and CGPath
-        let svg = SNPath.svgFrom(elements)
-        let es = SNPath.elementsFrom(svg)
-        let path = SNPath.pathFrom(es)
-        let es2 = SNPath.elementsFrom(path)
+        let svg = SNPath.svg(from: elements)
+        let es = SNPath.elements(from: svg)
+        let path = SNPath.path(from: es)
+        let es2 = SNPath.elements(from: path)
         
-        layerCurve.path = SNPath.pathFrom(es2)
+        layerCurve.path = SNPath.path(from: es2)
         layerCurve.lineWidth = 12
-        layerCurve.fillColor = UIColor.clearColor().CGColor
-        layerCurve.strokeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.4).CGColor
+        layerCurve.fillColor = UIColor.clear.cgColor
+        layerCurve.strokeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.4).cgColor
         layerCurve.lineCap = "round"
         layerCurve.lineJoin = "round"
         self.view.layer.addSublayer(layerCurve)
         layers.append(layerCurve)
 
         let layerLine = CAShapeLayer()
-        layerLine.path = SNPath.polyPathFrom(elements)
+        layerLine.path = SNPath.polyPath(from: elements)
         layerLine.lineWidth = 2
-        layerLine.fillColor = UIColor.clearColor().CGColor
-        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.8, alpha: 0.1).CGColor
+        layerLine.fillColor = UIColor.clear.cgColor
+        layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.8, alpha: 0.1).cgColor
         self.view.layer.addSublayer(layerLine)
         layers.append(layerLine)
         
-        print(SNPath.svgFrom(elements))
+        print(SNPath.svg(from: elements))
 
         return true
     }

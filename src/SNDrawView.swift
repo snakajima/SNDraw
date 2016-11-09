@@ -10,39 +10,39 @@ import UIKit
 
 
 public protocol SNDrawViewDelegate:NSObjectProtocol {
-    func didComplete(elements:[SNPathElement]) -> Bool
+    func didComplete(_ elements:[SNPathElement]) -> Bool
 }
 
-public class SNDrawView: UIView {
+open class SNDrawView: UIView {
     public var builder = SNPathBuilder(minSegment: 25.0)
     weak public var delegate:SNDrawViewDelegate?
     public lazy var shapeLayer:CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
-        shapeLayer.contentsScale = UIScreen.mainScreen().scale
+        shapeLayer.contentsScale = UIScreen.main.scale
         shapeLayer.lineWidth = 10.0
-        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).CGColor
+        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).cgColor
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
-        shapeLayer.fillColor = UIColor.clearColor().CGColor
+        shapeLayer.fillColor = UIColor.clear.cgColor
         self.layer.addSublayer(shapeLayer)
         return shapeLayer
     }()
     
-    override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            shapeLayer.path = builder.start(touch.locationInView(self))
+            shapeLayer.path = builder.start(touch.location(in: self))
         }
     }
     
-    override public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if let path = builder.move(touch.locationInView(self)) {
+            if let path = builder.move(touch.location(in: self)) {
                 shapeLayer.path = path
             }
         }
     }
     
-    override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let _ = touches.first {
             shapeLayer.path = builder.end()
             
@@ -52,7 +52,7 @@ public class SNDrawView: UIView {
         }
     }
     
-    override public func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    override open func touchesCancelled(_ touches: Set<UITouch>?, with event: UIEvent?) {
         print("touchesCancelled")
     }
 }
