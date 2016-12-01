@@ -55,7 +55,7 @@ extension ViewController : SNDrawViewDelegate {
         layerCurve.strokeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.4).cgColor
         layerCurve.lineCap = "round"
         layerCurve.lineJoin = "round"
-        self.view.layer.addSublayer(layerCurve)
+        self.drawView?.layer.addSublayer(layerCurve)
         layers.append(layerCurve)
 
         let layerLine = CAShapeLayer()
@@ -63,7 +63,7 @@ extension ViewController : SNDrawViewDelegate {
         layerLine.lineWidth = 2
         layerLine.fillColor = UIColor.clear.cgColor
         layerLine.strokeColor = UIColor(red: 0, green: 0, blue: 0.8, alpha: 0.1).cgColor
-        self.view.layer.addSublayer(layerLine)
+        self.drawView?.layer.addSublayer(layerLine)
         layers.append(layerLine)
         
         print(SNPath.svg(from: elements))
