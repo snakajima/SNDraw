@@ -96,7 +96,7 @@ public struct SNPath {
         var cp = CGPoint.zero // last control point for S command
         var prevIndex = svg.startIndex // for performance
         var prevOffset = 0
-        let matches = SNPath.regexSVG.matches(in: svg, options: NSRegularExpression.MatchingOptions(), range: NSMakeRange(0, svg.characters.count))
+        let matches = SNPath.regexSVG.matches(in: svg, options: NSRegularExpression.MatchingOptions(), range: NSMakeRange(0, svg.count))
         matches.forEach { match in
             var start = svg.index(prevIndex, offsetBy: match.range.location - prevOffset)
             let cmd = svg[start..<svg.index(start, offsetBy: 1)]
@@ -106,9 +106,10 @@ public struct SNPath {
             prevOffset = match.range.location + match.range.length
             
             let params = svg[start..<end]
-            let nums = SNPath.regexNUM.matches(in: params, options: [], range: NSMakeRange(0, params.characters.count))
+            let nums = SNPath.regexNUM.matches(in: params, options: [], range: NSMakeRange(0, params.count))
             let p = nums.map({ (num) -> CGFloat in
-                let start = params.characters.index(params.startIndex, offsetBy: num.range.location)
+                // WAS: let start = params.characters.index(params.startIndex, offsetBy: num.range.location)
+                let start = params.index(params.startIndex, offsetBy: num.range.location)
                 let end = svg.index(start, offsetBy: num.range.length)
                 return CGFloat((params[start..<end] as NSString).floatValue)
             })
