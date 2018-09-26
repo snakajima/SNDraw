@@ -106,7 +106,7 @@ public struct SNPath {
             prevOffset = match.range.location + match.range.length
             
             let params = svg[start..<end]
-            let nums = SNPath.regexNUM.matches(in: params, options: [], range: NSMakeRange(0, params.count))
+            let nums = SNPath.regexNUM.matches(in: String(params), options: [], range: NSMakeRange(0, params.count))
             let p = nums.map({ (num) -> CGFloat in
                 // WAS: let start = params.characters.index(params.startIndex, offsetBy: num.range.location)
                 let start = params.index(params.startIndex, offsetBy: num.range.location)

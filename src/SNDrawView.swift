@@ -21,8 +21,8 @@ open class SNDrawView: UIView {
         shapeLayer.contentsScale = UIScreen.main.scale
         shapeLayer.lineWidth = 10.0
         shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.3).cgColor
-        shapeLayer.lineCap = kCALineCapRound
-        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.lineCap = CAShapeLayerLineCap.round
+        shapeLayer.lineJoin = CAShapeLayerLineJoin.round
         shapeLayer.fillColor = UIColor.clear.cgColor
         self.layer.addSublayer(shapeLayer)
         return shapeLayer

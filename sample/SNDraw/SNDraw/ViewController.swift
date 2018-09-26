@@ -53,8 +53,8 @@ extension ViewController : SNDrawViewDelegate {
         layerCurve.lineWidth = 12
         layerCurve.fillColor = UIColor.clear.cgColor
         layerCurve.strokeColor = UIColor(red: 0, green: 1, blue: 0, alpha: 0.4).cgColor
-        layerCurve.lineCap = "round"
-        layerCurve.lineJoin = "round"
+        layerCurve.lineCap = convertToCAShapeLayerLineCap("round")
+        layerCurve.lineJoin = convertToCAShapeLayerLineJoin("round")
         self.view.layer.addSublayer(layerCurve)
         layers.append(layerCurve)
 
@@ -72,3 +72,13 @@ extension ViewController : SNDrawViewDelegate {
     }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToCAShapeLayerLineCap(_ input: String) -> CAShapeLayerLineCap {
+	return CAShapeLayerLineCap(rawValue: input)
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToCAShapeLayerLineJoin(_ input: String) -> CAShapeLayerLineJoin {
+	return CAShapeLayerLineJoin(rawValue: input)
+}
